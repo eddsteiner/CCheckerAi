@@ -1,3 +1,9 @@
-# CCheckerAi
-The purpose of this repository is to develop ai that can play chinese checkers.
-engine code is from https://github.com/AndreaVidali/ChineseChekersAI
+# CCheckerAI
+The purpose of this repository is to train an AI using NEAT to
+play chinese checkers.
+
+## Instructions
+TBA
+
+## Credits
+Engine code is from https://github.com/AndreaVidali/ChineseChekersAI

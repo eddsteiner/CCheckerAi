@@ -1,9 +1,13 @@
-from engine import ChineseCheckersEngine
+from src.engine import ChineseCheckersEngine
 
 def main():
     
     game = ChineseCheckersEngine()
     game.initialize_board()
+    game.print_board()
+
+
+    game.board1 = list(range(81))
     game.print_board()
 
 

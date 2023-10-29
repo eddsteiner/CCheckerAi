@@ -5,5 +5,3 @@ play chinese checkers.
 ### Instructions
 TBA
 
-### Credits
-Engine code is from https://github.com/AndreaVidali/ChineseChekersAI

@@ -1,10 +1,14 @@
 import numpy as np
+import numpy.typing as npt
+
 
 class ChineseCheckersEngine:
     def __init__(self):
         # Initialize the game board1, objective zones, players, etc.
-        self.board1 = [0] * 81  # 9x9 board
-        self.board2 = [0] * 81  # 9x9 board
+        #self.board1 = [0] * 81  # 9x9 board
+        #self.board2 = [0] * 81  # 9x9 board
+        self.board1 = np.zeros(81) # 9x9 board
+        self.board2 = np.zeros(81) # 9x9 board
         self.objective_zone1 = [0, 1, 2, 3, 9, 10, 11, 18, 19, 27]
         self.objective_zone2 = [53, 61, 62, 69, 70, 71, 77, 78, 79, 80]
         self.current_player = True  # Start with Player 1
@@ -49,7 +53,6 @@ class ChineseCheckersEngine:
     
         return 0  # No player has won yet
 
-    
 
     def is_valid_move(self, start_pos: int, action: int) -> bool:
         """Returns: True = valid move, False = invalid move."""
@@ -66,7 +69,7 @@ class ChineseCheckersEngine:
         return True
 
 
-    def retrieve_boards(self, player: bool) -> list[int]:
+    def retrieve_board(self, player: bool) -> npt.NDArray[np.float64]:
         """Returns both boards."""
         if player: #if the player is player1
             return self.board1
@@ -115,3 +118,4 @@ class ChineseCheckersEngine:
                 elif self.board2[index] == 2:
                     print("2", end=" ")
             print()  # Move to the next line for the next row
+

@@ -1,4 +1,7 @@
-from src.engine import ChineseCheckersEngine
+import numpy as np
+
+from engine import ChineseCheckersEngine
+
 
 def main():
     
@@ -7,9 +10,10 @@ def main():
     game.print_board()
 
 
-    game.board1 = list(range(81))
+    game.board1 = np.array(list(range(81)))
     game.print_board()
 
 
 if __name__ == "__main__":
     main()
+

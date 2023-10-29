@@ -17,13 +17,6 @@ class Architect:
         """Contains all the creatures in this generation."""
 
 
-    def reproduce(self, parent1: Creature, parent2: Creature) -> Creature:
-        """TODO Takes two parents and produces a child."""
-        child = from_genome()
-
-        return child
-
-
     def save_generation(self, file_name: str):
         """TODO Saves the current sorted generation to a file."""
         pass
@@ -34,6 +27,28 @@ class Architect:
         pass
 
 
+    def evolve(self):
+        """TODO Plays through one generation of evolution."""
+        #here we sort all the creatures, call selection() and then repopulate()
+
+
+    def selection(self):
+        """Kills off a large portion of the population of Creatures."""
+        #we can use all sorts of algorithms to do this, like killing off the worst half
+        #   or doing some sort of gradient
+
+    
+    def repopulate(self):
+        """Fills the population again back to full capacity."""
+        #ensure new children created during this function call are not used as parents
+        #call the reproduce() function to aid
+
+
+    def reproduce(self, parent1: Creature, parent2: Creature) -> Creature:
+        """TODO Takes two parents and produces a child."""
+        child = from_genome(None)
+
+        return child
 
 
 

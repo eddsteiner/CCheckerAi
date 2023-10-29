@@ -5,7 +5,7 @@ from engine import ChineseCheckersEngine
 
 def main():
     
-    game = ChineseCheckersEngine()
+    game = ChineseCheckersEngine(None, None)
     game.initialize_board()
     game.print_board()
 

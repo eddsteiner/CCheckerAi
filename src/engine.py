@@ -1,23 +1,25 @@
 import numpy as np
 import numpy.typing as npt
+from typing import Any
 
 
 class ChineseCheckersEngine:
     """Manages a Chinese Checkers game."""
 
-    def __init__(self):
-        """Initialize the game board, objective zones, players, etc."""
-        #self.board1 = [0] * 81  # 9x9 board
-        #self.board2 = [0] * 81  # 9x9 board
+    def __init__(self, player1: Any, player2: Any):
+        """Initialize the game boards, objective zones, players, etc."""
         self.board1 = np.zeros(81) # 9x9 board
         self.board2 = np.zeros(81) # 9x9 board
         self.objective_zone1 = [0, 1, 2, 3, 9, 10, 11, 18, 19, 27]
         self.objective_zone2 = [53, 61, 62, 69, 70, 71, 77, 78, 79, 80]
         self.current_player = True  # Start with Player 1
+        self.player1 = player1
+        self.player2 = player2
         self.initialize_board()
 
 
     def initialize_board(self):
+        """Initialize the game boards."""
         for index in self.objective_zone1:
             self.board1[index] = 2 #fills objective 1 with player 1 pieces
         for index in self.objective_zone2:
@@ -31,7 +33,6 @@ class ChineseCheckersEngine:
 
     def switch_player(self):
         """Switch to the next player's turn."""
-        #self.current_player = 3 - self.current_player  # Toggle between 1 and 2
         self.current_player = not self.current_player
 
 

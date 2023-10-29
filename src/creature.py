@@ -1,13 +1,21 @@
 import numpy as np
 import numpy.typing as npt
-#from typing import Any, Self
+from typing import Any
 
 
 class Creature:
     """An individual capable of playing Chinese Checkers."""
 
-    #genes: 
-    #neuralnet: 
+    def __init__(self, genome: Any):
+        #make sure to specify the genome's type once we figure that out
+        #don't add a default parameter to reduce chances of mistakes later
+        self.generate_neuralnet()
+        pass
+
+
+    def generate_neuralnet(self):
+        """TODO Reads the genome and generates a neural network."""
+        pass
 
 
     def calculate(self, board: npt.NDArray[np.int32]) -> npt.NDArray[np.int32]:
@@ -16,13 +24,17 @@ class Creature:
         return ret
 
 
-def from_genome() -> Creature:
+def from_genome(genome: Any) -> Creature:
     """TODO Creates a Creature from a genome."""
-    return Creature()
+    #will set the creature's neural network and call generate_neuralnet()
+    #remember to set genome's type later
+    return Creature(genome)
 
 
-def new_creature() -> Creature:
+def random_creature() -> Creature:
     """TODO Creates a new randomized Creature."""
-    return Creature()
+    #generate a random genome here and then feed it to the creature
+    genome = None
+    return Creature(genome)
 
 

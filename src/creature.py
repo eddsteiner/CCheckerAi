@@ -2,6 +2,7 @@ import numpy as np
 import numpy.typing as npt
 #from typing import Any, Self
 
+
 class Creature:
     """An individual capable of playing Chinese Checkers."""
 
@@ -18,6 +19,7 @@ class Creature:
 def from_genome() -> Creature:
     """TODO Creates a Creature from a genome."""
     return Creature()
+
 
 def new_creature() -> Creature:
     """TODO Creates a new randomized Creature."""

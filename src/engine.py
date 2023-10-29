@@ -3,8 +3,10 @@ import numpy.typing as npt
 
 
 class ChineseCheckersEngine:
+    """Manages a Chinese Checkers game."""
+
     def __init__(self):
-        # Initialize the game board1, objective zones, players, etc.
+        """Initialize the game board, objective zones, players, etc."""
         #self.board1 = [0] * 81  # 9x9 board
         #self.board2 = [0] * 81  # 9x9 board
         self.board1 = np.zeros(81) # 9x9 board
@@ -70,7 +72,7 @@ class ChineseCheckersEngine:
 
 
     def retrieve_board(self, player: bool) -> npt.NDArray[np.float64]:
-        """Returns both boards."""
+        """Returns the board for the specified player."""
         if player: #if the player is player1
             return self.board1
         return self.board2

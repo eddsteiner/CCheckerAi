@@ -22,3 +22,9 @@ class StructManager():
     def set_nums(self) -> int:
         """Set x and y."""
 
+    def get_pointer(self) -> int:
+        """Returns the pointer to the internal struct."""
+
+    def copy_pointer(self, pointer: int) -> None:
+        """Copies values from the provided pointer."""
+

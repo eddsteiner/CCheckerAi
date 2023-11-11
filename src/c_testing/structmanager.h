@@ -51,10 +51,6 @@ static void StructManager_dealloc(Coords* self) {
 */
 
 
-//static double StructManager_getx(Coords* self, void *closure) {
-//    return self->x;
-//}
-
 static PyObject* StructManager_getx(Coords* self, void* closure) {
     return PyFloat_FromDouble(self->x);
 }
@@ -63,10 +59,6 @@ static PyObject* StructManager_getx(Coords* self, void* closure) {
 static PyObject* StructManager_gety(Coords* self, void* closure) {
     return PyFloat_FromDouble(self->y);
 }
-
-//static double StructManager_gety(Coords* self, void *closure) {
-//    return self->x;
-//}
 
 
 static int StructManager_setx(Coords* self, PyObject* value, void *closure) {
@@ -104,22 +96,11 @@ static int StructManager_sety(Coords* self, PyObject* value, void *closure) {
 
 
 static PyObject* StructManager_add_nums(Coords* self, PyObject* Py_UNUSED(ignored)) {
-    //if (self->x == NULL) {
-    //    PyErr_SetString(PyExc_AttributeError, "x");
-    //    return NULL;
-    //}
-    //printf("DEBUG: %f, %f\n", self->x, self->y);
-    //return PyLong_FromLong(self->x + self->y);
     return PyFloat_FromDouble(self->x + self->y);
 }
 
 
 static PyObject* StructManager_set_nums(Coords* self, PyObject* args) {
-    //if (self->x == NULL) {
-    //    PyErr_SetString(PyExc_AttributeError, "x");
-    //    return NULL;
-    //}
-    //printf("setting nums\n");
     self->x = 2.2;
     self->y = 4.4;
     return PyFloat_FromDouble(self->x + self->y);
@@ -133,7 +114,6 @@ static PyObject* StructManager_get_pointer(Coords* self, PyObject* Py_UNUSED(ign
 
 static PyObject* StructManager_copy_pointer(Coords* self, PyObject* args) {
     long* pointer;
-    //PyArg_ParseTuple(args, "i", &pointer);
     if (!PyArg_ParseTuple(args, "l", &pointer)) {
         PyErr_SetString(PyExc_TypeError, "The attribute 'pointer' must be an integer");
         Py_RETURN_NONE;
@@ -190,5 +170,5 @@ static PyTypeObject StructManager = {
 };
 
 
-#endif // STRUCTMANAGER_H_
+#endif //STRUCTMANAGER_H_
 

@@ -31,9 +31,5 @@ b = Example.StructManager()
 b.copy_pointer(point)
 print(f"x: {b.x}, y: {b.y}")
 
-#a = Example.StructManager()
-#print(f"x: {a.x}, y: {a.y}")
-#print(float(a.x))
-
 
 

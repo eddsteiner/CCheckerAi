@@ -8,7 +8,11 @@ def return_two() -> tuple[int, int]:
 
 class Custom():
     """Basic experimentation"""
-
     number: float 
     number1: float
+
+class StructManager():
+    """Manages a C struct"""
+    x: float 
+    y: float
 

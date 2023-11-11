@@ -12,4 +12,10 @@ z.number = 3.2
 print(z.number)
 print(z.number1)
 
+a = Example.StructManager()
+a.x = 3.0
+a.y = 6.0
+print(f"x: {a.x}, y: {a.y}")
+
+
 

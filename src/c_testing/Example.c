@@ -7,6 +7,7 @@
 //#include <Python.h>
 #include <stddef.h> /* for offsetof() */
 #include <stdio.h>
+#include "structmanager.h"
 
 
 
@@ -173,6 +174,8 @@ static struct PyModuleDef Module = {
 //}
 
 
+
+
 // Initialize module, function name must match file name
 PyMODINIT_FUNC PyInit_Example(void) {
     PyObject *m;
@@ -180,6 +183,7 @@ PyMODINIT_FUNC PyInit_Example(void) {
     if (PyType_Ready(&CustomType) < 0) { //ensure CustomType is good
         return NULL;
     }
+
 
     m = PyModule_Create(&Module); //create the module
     if (m == NULL) {
@@ -189,6 +193,16 @@ PyMODINIT_FUNC PyInit_Example(void) {
     Py_INCREF(&CustomType);
     if (PyModule_AddObject(m, "Custom", (PyObject *) &CustomType) < 0) {
         Py_DECREF(&CustomType);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    if (PyType_Ready(&StructManager) < 0) { //ensure CustomType is good
+        return NULL;
+    }
+    Py_INCREF(&StructManager);
+    if (PyModule_AddObject(m, "StructManager", (PyObject *) &StructManager) < 0) {
+        Py_DECREF(&StructManager);
         Py_DECREF(m);
         return NULL;
     }

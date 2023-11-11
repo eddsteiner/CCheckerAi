@@ -62,10 +62,8 @@ static void StructManager_dealloc(Coords* self) {
 }
 
 static PyMemberDef StructManager_members[] = {
-    {"x", T_FLOAT, offsetof(Coords, x), 0,
-     "x coord"},
-    {"y", T_FLOAT, offsetof(Coords, y), 0,
-     "y coord"},
+    {"x", T_FLOAT, offsetof(Coords, x), 0, "x coord"},
+    {"y", T_FLOAT, offsetof(Coords, y), 0, "y coord"},
     {NULL}  /* Sentinel */
 };
 
@@ -80,12 +78,24 @@ static PyObject* StructManager_add_nums(Coords* self, PyObject* Py_UNUSED(ignore
     return PyLong_FromLong(self->x + self->y);
 }
 
+static PyObject* StructManager_set_nums(Coords* self, PyObject* Py_UNUSED(ignored)) {
+    //if (self->x == NULL) {
+    //    PyErr_SetString(PyExc_AttributeError, "x");
+    //    return NULL;
+    //}
+    printf("setting nums\n");
+    self->x = 2.2;
+    self->y = 4.4;
+    return PyLong_FromLong(self->x + self->y);
+}
+
 
 static PyMethodDef StructManager_methods[] = {
     //{"name", (PyCFunction) Custom_name, METH_NOARGS,
     // "Return the name, combining the first and last name"
     //},
     {"add_nums", (PyCFunction)StructManager_add_nums, METH_NOARGS, "Add x and y together"},
+    {"set_nums", (PyCFunction)StructManager_set_nums, METH_NOARGS, "Set x and y"},
     {NULL},
 };
 

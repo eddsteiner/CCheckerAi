@@ -19,3 +19,6 @@ class StructManager():
     def add_nums(self) -> int:
         """Add x and y together."""
 
+    def set_nums(self) -> int:
+        """Set x and y."""
+

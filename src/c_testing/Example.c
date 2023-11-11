@@ -119,7 +119,7 @@ static PyObject* findPrimes(PyObject* self, PyObject* args) {
 
 // Python: Returns two integers
 static PyObject* return_two(PyObject* self) {
-    return Py_BuildValue("ii", 123, 321);
+    return Py_BuildValue("ii", 123, 321); 
 }
 
 
@@ -202,7 +202,7 @@ PyMODINIT_FUNC PyInit_Example(void) {
     }
     Py_INCREF(&StructManager);
     if (PyModule_AddObject(m, "StructManager", (PyObject *) &StructManager) < 0) {
-        Py_DECREF(&StructManager);
+        Py_DECREF(&StructManager); 
         Py_DECREF(m);
         return NULL;
     }

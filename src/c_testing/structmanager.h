@@ -15,6 +15,24 @@
 //extern PyMethodDef StructManager_methods[];
 //extern PyTypeObject StructManager;
 
+//static float StructManagerC_add_nums(Coords *self) {
+//    return self->x + self->y;
+//}
+
+//static PyObject* StructManager_add_nums(PyObject* self, PyObject* args) {
+//    int num1, num2, sts;
+//    if (!PyArg_ParseTuple(args, "ff", &num1, &num2)) {
+//        return NULL;
+//    }
+//    sts = CfindPrimes(num1, num2);
+//    return PyLong_FromLong(sts);
+//}
+
+
+
+
+
+
 static PyObject* StructManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Coords* self;
     self = (Coords*) type->tp_alloc(type, 0);
@@ -52,11 +70,23 @@ static PyMemberDef StructManager_members[] = {
 };
 
 
+
+static PyObject* StructManager_add_nums(Coords* self, PyObject* Py_UNUSED(ignored)) {
+    //if (self->x == NULL) {
+    //    PyErr_SetString(PyExc_AttributeError, "x");
+    //    return NULL;
+    //}
+    printf("DEBUG: %f, %f\n", self->x, self->y);
+    return PyLong_FromLong(self->x + self->y);
+}
+
+
 static PyMethodDef StructManager_methods[] = {
     //{"name", (PyCFunction) Custom_name, METH_NOARGS,
     // "Return the name, combining the first and last name"
     //},
-    {NULL}  /* Sentinel */
+    {"add_nums", (PyCFunction)StructManager_add_nums, METH_NOARGS, "Add x and y together"},
+    {NULL},
 };
 
 static PyTypeObject StructManager = {

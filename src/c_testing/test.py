@@ -16,6 +16,7 @@ a = Example.StructManager()
 a.x = 3.0
 a.y = 6.0
 print(f"x: {a.x}, y: {a.y}")
+print(a.add_nums())
 
 
 

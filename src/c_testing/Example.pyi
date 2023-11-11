@@ -16,3 +16,6 @@ class StructManager():
     x: float 
     y: float
 
+    def add_nums(self) -> int:
+        """Add x and y together."""
+

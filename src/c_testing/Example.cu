@@ -131,18 +131,18 @@ static PyObject* version(PyObject* self) {
 
 
 
-//// Python: Returns two integers
-//static PyObject* test_cuda(PyObject* self) {
-//    float* a = malloc(9 * sizeof(float));
-//    float* b = malloc(9 * sizeof(float));
-//    float* c = malloc(9 * sizeof(float));
-//
-//    memcpy(a, (float[]){-1, 2, 4, 0, 5, 3, 6, 2, 1}, 9 * sizeof(a[0]));
-//    memcpy(b, (float[]){3, 0, 2, 3, 4, 5, 4, 7, 2}, 9 * sizeof(b[0]));
-//    maxmul(a, b, c, 3);
-//    //return Py_BuildValue("ii", 123, 321);
-//    return Py_BuildValue("[fffffffff]", c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8]);
-//}
+// Python: Returns two integers
+static PyObject* test_cuda(PyObject* self) {
+    float* a = malloc(9 * sizeof(float));
+    float* b = malloc(9 * sizeof(float));
+    float* c = malloc(9 * sizeof(float));
+
+    memcpy(a, (float[]){-1, 2, 4, 0, 5, 3, 6, 2, 1}, 9 * sizeof(a[0]));
+    memcpy(b, (float[]){3, 0, 2, 3, 4, 5, 4, 7, 2}, 9 * sizeof(b[0]));
+    maxmul(a, b, c, 3);
+    //return Py_BuildValue("ii", 123, 321);
+    return Py_BuildValue("[fffffffff]", c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7], c[8]);
+}
 
 
 
@@ -152,7 +152,7 @@ static PyMethodDef ModuleMethods[] = {
     {"findPrimes", findPrimes, METH_VARARGS, "Calculates all primes between num1 and num2"},
     {"version", (PyCFunction)version, METH_NOARGS, "Returns module version"},
     {"return_two", (PyCFunction)return_two, METH_NOARGS, "Returns two integers"},
-    //{"test_cuda", (PyCFunction)test_cuda, METH_NOARGS, "Tests CUDA"},
+    {"test_cuda", (PyCFunction)test_cuda, METH_NOARGS, "Tests CUDA"},
     {NULL, NULL, 0, NULL},
 };
 

@@ -49,6 +49,8 @@ extern "C" {
         // Get the result Matrix:
         cudaMemcpy(C,gpu_C,msize,cudaMemcpyDeviceToHost);
 
+        C[0] = 2.3;
+
         //Free device matrices
         cudaFree(gpu_A);
         cudaFree(gpu_B);

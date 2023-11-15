@@ -50,7 +50,7 @@ class ChineseCheckersEngine:
             
         p2_win = True
         for index in self.objective_zone2: #bottom, where player2 is going
-            if self.board2[index] != 2:
+            if self.board2[index] != 1:
                 p2_win = False
                 continue
         if p2_win: #player2 has won
@@ -71,6 +71,7 @@ class ChineseCheckersEngine:
         
 
         if action not in self.moves: #first checks if the action value is even in the list of valid move values
+            print('YO PICK A VALID MOVE FROM THE MOVE ARRAY')
             return False
          #check if the space is open
         
@@ -79,7 +80,7 @@ class ChineseCheckersEngine:
             if start_pos % 9 == 0:
                 #check the 0 corner that only allows 2 moves
                 if start_pos == 0:
-                    if action == (1 or 9):
+                    if action in (1, 9):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
                                 return False    #if not empty return false
@@ -91,7 +92,7 @@ class ChineseCheckersEngine:
                         return False
                 #check the 72 corner that only allows 3 moves
                 elif start_pos == 72:
-                    if action == (1 or -9 or -8):
+                    if action in (1, -9, -8):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
                                 return False    #if not empty return false
@@ -102,7 +103,7 @@ class ChineseCheckersEngine:
                     else: 
                         return False
                     
-                elif action == (8 or (-1)):
+                elif action in (8, (-1)):
                     return False
                 else:
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
@@ -119,7 +120,7 @@ class ChineseCheckersEngine:
             elif (start_pos + 1) % 9 == 0:
                 #check the 80 corner that only allows 2 moves
                 if start_pos == 80:
-                    if action == (-1 or -9):
+                    if action in (-1, -9):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
                                 return False    #if not empty return false
@@ -131,7 +132,7 @@ class ChineseCheckersEngine:
                         return False
                 #check the 8 corner that only allows 3 moves
                 elif start_pos == 8:
-                    if action == (-1 or 9 or 8):
+                    if action in (-1, 9, 8):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
                                 return False    #if not empty return false
@@ -141,7 +142,7 @@ class ChineseCheckersEngine:
                             return True #if space is empty return true 
                     else: 
                         return False
-                elif action == (1 or (-8)):
+                elif action in (1, (-8)):
                     return False
                 else:
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
@@ -156,7 +157,7 @@ class ChineseCheckersEngine:
 
             #check  third side ---------------------------------  
             elif start_pos in range(72, 81):
-                if action == (9 or 8):
+                if action in (9, 8):
                     return False
                 else:
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
@@ -170,7 +171,7 @@ class ChineseCheckersEngine:
 
             #check fourth side -----------------------------------
             elif start_pos in range(0-9):
-                if action == ((-9) or (-8)):
+                if action in ((-9), (-8)):
                     return False
                 else: 
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
@@ -189,128 +190,7 @@ class ChineseCheckersEngine:
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
-#PLLAYER 2 IS MOVE VALID
 
-    def is_valid_move_player2(self, start_pos: int, action: int) -> bool:
-        """Returns: True = valid move, False = invalid move."""
-        # Implement the rules to check if a move is valid
-        
-
-        if action not in self.moves: #first checks if the action value is even in the list of valid move values
-            return False
-         #check if the space is open
-        
-        else:
-            #check first side -----------------------------------
-            if start_pos % 9 == 0:
-                #check the 0 corner that only allows 2 moves
-                if start_pos == 0:
-                    if action == (1 or 9):
-                        if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                            if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                                return False    #if not empty return false
-                            else: 
-                                return True     #else return true if it is empty
-                        else:
-                            return True #if space is empty return true
-                    else:
-                        return False
-                #check the 72 corner that only allows 3 moves
-                elif start_pos == 72:
-                    if action == (1 or -9 or -8):
-                        if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                            if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                                return False    #if not empty return false
-                            else: 
-                                return True     #else return true if it is empty
-                        else:
-                            return True #if space is empty return true 
-                    else: 
-                        return False
-                    
-                elif action == (8 or (-1)):
-                    return False
-                else:
-                    if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                        if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                            return False    #if not empty return false
-                        else: 
-                            return True     #else return true if it is empty
-                    else:
-                        return True #if space is empty return true
-                
-            
-
-             #check second side -----------------------------------
-            elif (start_pos + 1) % 9 == 0:
-                #check the 80 corner that only allows 2 moves
-                if start_pos == 80:
-                    if action == (-1 or -9):
-                        if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                            if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                                return False    #if not empty return false
-                            else: 
-                                return True     #else return true if it is empty
-                        else:
-                            return True #if space is empty return true
-                    else:
-                        return False
-                #check the 8 corner that only allows 3 moves
-                elif start_pos == 8:
-                    if action == (-1 or 9 or 8):
-                        if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                            if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                                return False    #if not empty return false
-                            else: 
-                                return True     #else return true if it is empty
-                        else:
-                            return True #if space is empty return true 
-                    else: 
-                        return False
-                elif action == (1 or (-8)):
-                    return False
-                else:
-                    if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                        if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                            return False    #if not empty return false
-                        else: 
-                            return True     #else return true if it is empty
-                    else:
-                        return True #if space is empty return true 
-                
-
-
-            #check  third side ---------------------------------  
-            elif start_pos in range(72, 81):
-                if action == (9 or 8):
-                    return False
-                else:
-                    if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                        if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                            return False    #if not empty return false
-                        else: 
-                            return True     #else return true if it is empty
-                    else:
-                        return True #if space is empty return true
-                    
-
-            #check fourth side -----------------------------------
-            elif start_pos in range(0-9):
-                if action == ((-9) or (-8)):
-                    return False
-                else: 
-                    if self.board2[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                        if self.board2[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
-                            return False    #if not empty return false
-                        else: 
-                            return True     #else return true if it is empty
-                    else:
-                        return True #if space is empty return true
-            
-
-
-
-        return True 
 
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
@@ -323,12 +203,14 @@ class ChineseCheckersEngine:
         #check for valid piece picked
         if(player):
             if self.board1[start_pos] != 1:     #check if player 1 picked player 1 piece
+                print('CMON MAN PICK A PIECE THAT IS YOURS. YOUR PIECE SAYS 1')
                 is_valid = False                #if no then piece move is not valid
             else:
                 is_valid = self.is_valid_move(self.board1, start_pos, action)    #else check if the action is valid
 
         else:
-            if self.board2[start_pos] != 2:     #do the same for player 2
+            if self.board2[start_pos] != 1:     #do the same for player 2
+                print('CMON MAN PICK A PIECE THAT IS YOURS. YOUR PIECE SAYS 1')
                 is_valid = False
             else:
                 is_valid = self.is_valid_move(self.board2, start_pos, action)
@@ -406,9 +288,16 @@ class ChineseCheckersEngine:
             else:
                 main_board = self.board2
                 second_board = self.board1
-            main_board[start_pos + action] = 1
-            main_board[start_pos] = 0
-            second_board[(80-start_pos) + ((-1)*action)] = 2
-            second_board[start_pos] = 0
+
+            if main_board[start_pos + action] != 0:
+                main_board[start_pos + (2*action)] = 1
+                main_board[start_pos] = 0
+                second_board[(80-start_pos) + (2*((-1)*action))] = 2
+                second_board[(80 - start_pos)] = 0
+            else:
+                main_board[start_pos + action] = 1
+                main_board[start_pos] = 0
+                second_board[(80-start_pos) + ((-1)*action)] = 2
+                second_board[(80 - start_pos)] = 0
 
             return True

@@ -276,7 +276,16 @@ class ChineseCheckersEngine:
                         return True     #else return true if it is empty        
                            
                 else:
-                        return True #if space is empty return true 
+                        return True #if space is empty return true
+            else:
+                if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                    if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                        return False    #if not empty return false
+                    else: 
+                        return True     #else return true if it is empty
+                else:
+                    return True #if space is empty return true 
+
 
             
 

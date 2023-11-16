@@ -170,9 +170,10 @@ class ChineseCheckersEngine:
                     
 
             #check fourth side -----------------------------------
-            elif start_pos in range(0-9):
+            elif start_pos in range(0, 9):
                 if action in ((-9), (-8)):
                     return False
+                
                 else: 
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                         if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
@@ -181,6 +182,114 @@ class ChineseCheckersEngine:
                             return True     #else return true if it is empty
                     else:
                         return True #if space is empty return true
+            #-------------------------------------------------------------
+            #check inside side 1 -----------------------------------------
+            #-------------------------------------------------------------
+            elif (start_pos + 2) % 9 == 0:
+                #check inside intersection-------
+                if start_pos == 70:
+                    if action not in (1, -8, 9):
+                        if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                            if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                                return False    #if not empty return false
+                            else: 
+                                return True     #else return true if it is empty
+                        else:
+                            return True #if space is empty return true
+                    else:
+                        return False
+                #check inside intersection-------
+                elif start_pos == 16:
+                    if action not in (-9, -8, 1):
+                        if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                            if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                                return False    #if not empty return false
+                            else: 
+                                return True     #else return true if it is empty
+                        else:
+                            return True #if space is empty return true
+                    else:
+                        return False
+                else:
+                    if action not in (1, -8):
+                        if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                            if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                                    return False    #if not empty return false
+                            else: 
+                                    return True     #else return true if it is empty
+                        else:
+                            return True #if space is empty return true
+                    else: 
+                        return False
+            #-------------------------------------------------------------
+            #check inside side 2 -----------------------------------------
+            #-------------------------------------------------------------
+            elif (start_pos -1) % 9 == 0:
+                #check inside intersection-----
+                if start_pos == 10:
+                    if action not in (-1, 8, 9):
+                        if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                            if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                                return False    #if not empty return false
+                            else: 
+                                return True     #else return true if it is empty
+                        else:
+                            return True #if space is empty return true
+                    else:
+                        return False
+                #check inside intersection-----
+                elif start_pos == 64:
+                    if action not in (-1, 8, 9):
+                        if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                            if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                                return False    #if not empty return false
+                            else: 
+                                return True     #else return true if it is empty
+                        else:
+                            return True #if space is empty return true
+                    else:
+                        return False
+                else:
+                    if action not in (-1, 8):
+                        if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                            if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                                return False    #if not empty return false
+                            else: 
+                                return True     #else return true if it is empty
+                        else:
+                            return True #if space is empty return true
+
+
+
+            #-------------------------------------------------------------
+            #check inside side 3 -----------------------------------------
+            #-------------------------------------------------------------
+            elif start_pos in range(9, 18):
+                if action not in (-9, -8):
+                    if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                        if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                            return False    #if not empty return false
+                        else: 
+                            return True     #else return true if it is empty
+                    else:
+                        return True #if space is empty return true
+                else:
+                    return False  
+            #-------------------------------------------------------------
+            #check inside side 4 -----------------------------------------
+            #-------------------------------------------------------------
+            elif start_pos in range(63, 72):
+                if action not in (9, 8):
+                    if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                        if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                            return False    #if not empty return false
+                        else: 
+                            return True     #else return true if it is empty
+                    else:
+                        return True #if space is empty return true
+                else:
+                    return False
+
             
 
 

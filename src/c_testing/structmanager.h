@@ -3,10 +3,14 @@
 
 
 #define PY_SSIZE_T_CLEAN
-#include <python3.10/Python.h>
-#include <python3.10/structmember.h>
-#include <python3.10/floatobject.h>
-#include <python3.10/modsupport.h>
+//#include <python3.10/Python.h>
+//#include <python3.10/structmember.h>
+//#include <python3.10/floatobject.h>
+//#include <python3.10/modsupport.h>
+#include <python3.11/Python.h>
+#include <python3.11/structmember.h>
+#include <python3.11/floatobject.h>
+#include <python3.11/modsupport.h>
 #include "coords.h"
 
 

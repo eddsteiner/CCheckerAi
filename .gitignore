@@ -3,4 +3,6 @@
 **/build
 **/*.so
 **/cudatest
+**/.err
+**/.out
 

@@ -1,6 +1,8 @@
 #define PY_SSIZE_T_CLEAN
-#include <python3.10/Python.h>
-#include <python3.10/structmember.h>
+//#include <python3.10/Python.h>
+//#include <python3.10/structmember.h>
+#include <python3.11/Python.h>
+#include <python3.11/structmember.h>
 //#include <python3.10/tupleobject.h>
 //#include <python3.10/sliceobject.h>
 //#include <python3.10/floatobject.h>

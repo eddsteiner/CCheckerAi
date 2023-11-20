@@ -1,9 +1,0 @@
-ptxas info    : 0 bytes gmem
-ptxas info    : Compiling entry function '_Z6vecmulPfS_S_i' for 'sm_52'
-ptxas info    : Function properties for _Z6vecmulPfS_S_i
-    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
-ptxas info    : Used 32 registers, 348 bytes cmem[0]
-/usr/bin/ld: /weka/apps/gcc/10.2.1/bin/../lib/gcc/x86_64-pc-linux-gnu/10.2.0/libgcc.a(_muldi3.o): unable to initialize decompress status for section .debug_info
-/usr/bin/ld: /weka/apps/gcc/10.2.1/bin/../lib/gcc/x86_64-pc-linux-gnu/10.2.0/libgcc.a(_muldi3.o): unable to initialize decompress status for section .debug_info
-/usr/bin/ld: /weka/apps/gcc/10.2.1/bin/../lib/gcc/x86_64-pc-linux-gnu/10.2.0/libgcc.a(_muldi3.o): unable to initialize decompress status for section .debug_info
-/usr/bin/ld: /weka/apps/gcc/10.2.1/bin/../lib/gcc/x86_64-pc-linux-gnu/10.2.0/libgcc.a(_muldi3.o): unable to initialize decompress status for section .debug_info

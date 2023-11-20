@@ -118,8 +118,10 @@ class ChineseCheckersEngine:
 
              #check second side -----------------------------------
             elif (start_pos + 1) % 9 == 0:
+                print("in the right area")
                 #check the 80 corner that only allows 2 moves
                 if start_pos == 80:
+                    print("in the wrong area1")
                     if action in (-1, -9):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
@@ -132,6 +134,7 @@ class ChineseCheckersEngine:
                         return False
                 #check the 8 corner that only allows 3 moves
                 elif start_pos == 8:
+                    print("in the wrong area2")
                     if action in (-1, 9, 8):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
@@ -144,14 +147,28 @@ class ChineseCheckersEngine:
                         return False
                 elif action in (1, (-8)):
                     return False
+                
+                            
                 else:
+                    #print("almost")
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
-                        if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                        #print("almost2")
+                        if start_pos == 71:
+                            if action in (8,9):
+                                if board[start_pos + action] != 0:
+                                    #print("correct spot")
+                                    return False
+                        elif board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
+                            
                             return False    #if not empty return false
+                        
                         else: 
+                            #print("returns true 1")
                             return True     #else return true if it is empty
+                    
                     else:
-                        return True #if space is empty return true 
+                        #print("returns true2")
+                        return True
                 
 
 
@@ -161,6 +178,11 @@ class ChineseCheckersEngine:
                     return False
                 else:
                     if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
+                        if start_pos == 79:
+                            if action in (-8,1):
+                                if board[start_pos + action] != 0:
+                                    #print("correct spot")
+                                    return False
                         if board[start_pos + (action*2)] != 0: #if not empty then check the jump space over piece
                             return False    #if not empty return false
                         else: 
@@ -188,7 +210,7 @@ class ChineseCheckersEngine:
             elif (start_pos + 2) % 9 == 0:
                 #check inside intersection-------
                 if start_pos == 70:
-                    if action in (1, -8, 9):
+                    if action in (1, 8, 9):
                         if board[start_pos + action] != 0: #checks if space is empty (if not empty continue in condition)
                             return False    #if not empty return false
                         else: 
@@ -291,7 +313,7 @@ class ChineseCheckersEngine:
 
 
 
-        return True 
+        return False 
     
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
@@ -382,6 +404,7 @@ class ChineseCheckersEngine:
             print("move is not valid! Did not make move")
             return False
         else:
+            print("make_move returned true for some reason!!!")
             # if self.current_player:
             #     self.board1[start_pos + action] = 1
             #     self.board1[start_pos] = 0

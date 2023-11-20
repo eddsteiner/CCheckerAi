@@ -3,7 +3,6 @@
 #include <python3.11/structmember.h>
 #include <stddef.h> /* for offsetof() */
 #include <stdio.h>
-#include "structmanager.h"
 
 
 extern void maxmul(float *A, float* B, float *C, int size);
@@ -86,15 +85,15 @@ PyMODINIT_FUNC PyInit_neat(void) {
         return NULL;
     }
 
-    if (PyType_Ready(&StructManager) < 0) { //ensure CustomType is good
-        return NULL;
-    }
-    Py_INCREF(&StructManager);
-    if (PyModule_AddObject(m, "StructManager", (PyObject *) &StructManager) < 0) {
-        Py_DECREF(&StructManager);
-        Py_DECREF(m);
-        return NULL;
-    }
+    //if (PyType_Ready(&StructManager) < 0) { //ensure CustomType is good
+    //    return NULL;
+    //}
+    //Py_INCREF(&StructManager);
+    //if (PyModule_AddObject(m, "StructManager", (PyObject *) &StructManager) < 0) {
+    //    Py_DECREF(&StructManager);
+    //    Py_DECREF(m);
+    //    return NULL;
+    //}
 
     return m;
 }

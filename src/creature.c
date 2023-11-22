@@ -39,7 +39,7 @@ typedef struct Genome {
 } Genome;
 
 
-// NAME HTIS LATER
+// Contains a genome and its resultant arrays.
 typedef struct Creature {
     PyObject_HEAD;
     Genome genome;
@@ -48,12 +48,6 @@ typedef struct Creature {
 
 /// Deallocate a genome
 static void dealloc_genome(Genome* genome) {
-    //for (int i = 0; i < genome->node_count; i++) {
-    //    free(genome->nodes[i]);
-    //}
-    //for (int i = 0; i < genome->connection_count; i++) {
-    //    free(genome->connections[i]);
-    //}
     free(genome->nodes);
     free(genome->connections);
 }
@@ -79,22 +73,16 @@ static PyObject* Creature_new(PyTypeObject* type, PyObject* args, PyObject* kwds
     Creature* self;
     self = (Creature*)type->tp_alloc(type, 0);
     if (self != NULL) {
-        self->genome.nodes = NULL; //TODO
-        self->genome.node_count = 0; //TODO
-        self->genome.connections = NULL; //TODO
-        self->genome.connection_count = 0; //TODO
+        self->genome.nodes = NULL;
+        self->genome.node_count = 0;
+        self->genome.connections = NULL;
+        self->genome.connection_count = 0;
     }
     return (PyObject*) self;
 }
 
 
 static int Creature_init(Creature *self, PyObject *args, PyObject *kwds) {
-    //static char *kwlist[] = {"genome", NULL};
-
-    //if (!PyArg_ParseTupleAndKeywords(args, kwds, "|ff", kwlist,
-    //        &self->x, &self->y)) {
-    //    return -1;
-    //}
     return 0;
 }
 
@@ -158,7 +146,7 @@ static PyMethodDef Creature_methods[] = {
 PyTypeObject PyCreature = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "NEAT.Creature",
-    .tp_doc = PyDoc_STR("TODO description"),
+    .tp_doc = PyDoc_STR("An individual Creature which can play Chinese Checkers."),
     .tp_basicsize = sizeof(PyCreature),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT,

@@ -4,6 +4,7 @@
 #include <stddef.h> /* for offsetof() */
 #include <stdio.h>
 #include "creature.h"
+#include "generation_manager.h"
 
 
 extern void maxmul(float *A, float* B, float *C, int size);
@@ -52,12 +53,22 @@ PyMODINIT_FUNC PyInit_neat(void) {
         return NULL;
     }
 
-    if (PyType_Ready(&PyCreature) < 0) { //ensure CustomType is good
+    if (PyType_Ready(&PyCreature) < 0) { //ensure Creature is good
         return NULL;
     }
     Py_INCREF(&PyCreature);
     if (PyModule_AddObject(m, "Creature", (PyObject *) &PyCreature) < 0) {
         Py_DECREF(&PyCreature);
+        Py_DECREF(m);
+        return NULL;
+    }
+
+    if (PyType_Ready(&PyGenerationManager) < 0) { //ensure GenerationManager is good
+        return NULL;
+    }
+    Py_INCREF(&PyGenerationManager);
+    if (PyModule_AddObject(m, "Creature", (PyObject *) &PyGenerationManager) < 0) {
+        Py_DECREF(&PyGenerationManager);
         Py_DECREF(m);
         return NULL;
     }

@@ -1,7 +1,7 @@
 """NEAT Library Implemented in C and CUDA"""
 
 
-class NEAT:
+class GenerationManager:
     """Manages all functionality for a NEAT generation."""
 
     generation_number: int
@@ -58,9 +58,6 @@ class Creature:
     def total_gene_count(self) -> int:
         """a"""
 
-#PyObject* Creature_get_node_count(Creature* self, void* closure);
-#PyObject* Creature_get_connection_count(Creature* self, void* closure);
-#PyObject* total_gene_count(Creature* self, PyObject* Py_UNUSED(ignored));
 
 
 

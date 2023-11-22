@@ -1,7 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 
-from neat import NEAT, Creature
+from neat import GenerationManager, Creature
 
 
 GENERATION_SIZE = 500
@@ -12,7 +12,7 @@ class Architect:
 
 
     def __init__(self):
-        self.neat = NEAT()
+        self.neat = GenerationManager()
         """Contains all the creatures in this generation."""
 
 
@@ -57,9 +57,10 @@ class Architect:
         Returns rankings as a numpy array.
         """
 
-        rankings = np.zeros(GENERATION_SIZE, dtype = np.int32)
+        #rankings = np.zeros(GENERATION_SIZE, dtype = np.int32)
 
         #do all the tournament things here
+        rankings = np.array(range(GENERATION_SIZE), dtype = np.int32)
         all_creatures = self.neat.get_current_generation()
 
         return rankings

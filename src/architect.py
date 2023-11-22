@@ -25,7 +25,7 @@ class Architect:
 
         # ensure the folder where we save generations is created
         gen = self.neat.generation_number
-        ranking = self._ranking()
+        ranking = self.__ranking()
         file_name = f"generations/gen_{gen}.gen"
         return self.neat.save_generation(ranking.ctypes.data, file_name) #save
 
@@ -47,10 +47,10 @@ class Architect:
         Returns True if process succeeded, False otherwise.
         """
 
-        return self._evolution(self._ranking())
+        return self.__evolution(self.__ranking())
 
 
-    def _ranking(self) -> npt.NDArray[np.int32]:
+    def __ranking(self) -> npt.NDArray[np.int32]:
         """
         TODO Runs a tournament for the whole generation.
 
@@ -60,11 +60,12 @@ class Architect:
         rankings = np.zeros(GENERATION_SIZE, dtype = np.int32)
 
         #do all the tournament things here
+        all_creatures = self.neat.get_current_generation()
 
         return rankings
 
 
-    def _evolution(self, rankings: npt.NDArray[np.int32]) -> bool:
+    def __evolution(self, rankings: npt.NDArray[np.int32]) -> bool:
         """
         Calls NEAT's evolve function, enacting the rankings and repopulation.
 

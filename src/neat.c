@@ -3,40 +3,10 @@
 #include <python3.11/structmember.h>
 #include <stddef.h> /* for offsetof() */
 #include <stdio.h>
+#include "creature.h"
 
 
 extern void maxmul(float *A, float* B, float *C, int size);
-
-
-// Python: Returns package version
-static PyObject* version(PyObject* self) {
-    return Py_BuildValue("s", "Version 0.0.1");
-}
-
-
-
-
-
-
-
-
-//// Python: Wrapper for CfindPrimes
-//static PyObject* findPrimes(PyObject* self, PyObject* args) {
-//    int num1, num2, sts;
-//    if (!PyArg_ParseTuple(args, "ii", &num1, &num2)) {
-//        return NULL;
-//    }
-//    sts = CfindPrimes(num1, num2);
-//    return PyLong_FromLong(sts);
-//}
-
-
-//// Python: Returns two integers
-//static PyObject* return_two(PyObject* self) {
-//    return Py_BuildValue("ii", 123, 321);
-//}
-
-
 static PyObject* pymaxmul(PyObject* self, PyObject* args)  {
     float *ap, *bp, *cp;
     int s;
@@ -48,13 +18,10 @@ static PyObject* pymaxmul(PyObject* self, PyObject* args)  {
 }
 
 
-
-
-
-
-
-
-
+// Python: Returns package version
+static PyObject* version(PyObject* self) {
+    return Py_BuildValue("s", "Version 0.0.1");
+}
 
 
 // Wrap all functions together
@@ -85,15 +52,15 @@ PyMODINIT_FUNC PyInit_neat(void) {
         return NULL;
     }
 
-    //if (PyType_Ready(&StructManager) < 0) { //ensure CustomType is good
-    //    return NULL;
-    //}
-    //Py_INCREF(&StructManager);
-    //if (PyModule_AddObject(m, "StructManager", (PyObject *) &StructManager) < 0) {
-    //    Py_DECREF(&StructManager);
-    //    Py_DECREF(m);
-    //    return NULL;
-    //}
+    if (PyType_Ready(&PyCreature) < 0) { //ensure CustomType is good
+        return NULL;
+    }
+    Py_INCREF(&PyCreature);
+    if (PyModule_AddObject(m, "Creature", (PyObject *) &PyCreature) < 0) {
+        Py_DECREF(&PyCreature);
+        Py_DECREF(m);
+        return NULL;
+    }
 
     return m;
 }

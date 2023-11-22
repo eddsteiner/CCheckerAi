@@ -43,6 +43,9 @@ class NEAT:
 class Creature:
     """An individual Creature which can play Chinese Checkers."""
 
+    node_count: int
+    connection_count: int
+
     def calculate(self, board: int, output_buf: int) -> None:
         """
         Takes a pointer to a board and an output buffer, and
@@ -51,6 +54,13 @@ class Creature:
         The board should be of size 81.
         The output buffer should be of size x.
         """
+
+    def total_gene_count(self) -> int:
+        """a"""
+
+#PyObject* Creature_get_node_count(Creature* self, void* closure);
+#PyObject* Creature_get_connection_count(Creature* self, void* closure);
+#PyObject* total_gene_count(Creature* self, PyObject* Py_UNUSED(ignored));
 
 
 

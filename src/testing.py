@@ -23,5 +23,11 @@ neat.maxmul(apoint, bpoint, cpoint, 3)
 print(c)
 
 
+creature = neat.Creature()
+x = creature.connection_count
+print(x)
+print(creature.total_gene_count())
+
+
 
 

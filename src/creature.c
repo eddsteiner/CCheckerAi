@@ -5,6 +5,7 @@
 #include <python3.11/modsupport.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "genome.h"
 
 
 
@@ -13,44 +14,11 @@
 */
 
 
-// Contains one node gene in a genome.
-typedef struct NodeGene {
-    int id; //unique
-    uint8_t type; //0 = input, 1 = output, 2 = hidden, 3 = end/delimiter
-} NodeGene;
-
-
-// Contains one connection gene in a genome.
-typedef struct ConnectionGene {
-    int in;
-    int out;
-    double weight;
-    uint8_t enabled; //0 = disabled, 1 = enabled, 2 = end/delimiter
-    int innov; //shared across genomes, combination of in and out
-} ConnectionGene;
-
-
-// Contains a Creature's genome, consisting of NodeGenes and ConnectionGenes.
-typedef struct Genome {
-    NodeGene* nodes;
-    ConnectionGene* connections;
-    int node_count;
-    int connection_count;
-} Genome;
-
-
 // Contains a genome and its resultant arrays.
 typedef struct Creature {
     PyObject_HEAD;
     Genome genome;
 } Creature;
-
-
-/// Deallocate a genome
-static void dealloc_genome(Genome* genome) {
-    free(genome->nodes);
-    free(genome->connections);
-}
 
 
 static NodeGene* push_node(Genome* genome, NodeGene* node) {
@@ -88,6 +56,7 @@ static int Creature_init(Creature *self, PyObject *args, PyObject *kwds) {
 
 
 static void Creature_dealloc(Creature* self) {
+    dealloc_genome_internals(&self->genome); //deallocate the genome first
     Py_TYPE(self)->tp_free((PyObject*) self);
 }
 

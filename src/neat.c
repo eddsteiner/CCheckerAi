@@ -57,7 +57,7 @@ PyMODINIT_FUNC PyInit_neat(void) {
         return NULL;
     }
     Py_INCREF(&PyCreature);
-    if (PyModule_AddObject(m, "Creature", (PyObject *) &PyCreature) < 0) {
+    if (PyModule_AddObject(m, "Creature", (PyObject*)&PyCreature) < 0) {
         Py_DECREF(&PyCreature);
         Py_DECREF(m);
         return NULL;
@@ -67,7 +67,7 @@ PyMODINIT_FUNC PyInit_neat(void) {
         return NULL;
     }
     Py_INCREF(&PyGenerationManager);
-    if (PyModule_AddObject(m, "Creature", (PyObject *) &PyGenerationManager) < 0) {
+    if (PyModule_AddObject(m, "GenerationManager", (PyObject*)&PyGenerationManager) < 0) {
         Py_DECREF(&PyGenerationManager);
         Py_DECREF(m);
         return NULL;

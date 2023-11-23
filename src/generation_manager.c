@@ -110,7 +110,7 @@ static PyMethodDef GenerationManager_methods[] = {
 PyTypeObject PyGenerationManager = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name = "NEAT.GenerationManager",
-    .tp_doc = PyDoc_STR("An individual Creature which can play Chinese Checkers."),
+    .tp_doc = PyDoc_STR("Manages all functionality for a NEAT generation."),
     .tp_basicsize = sizeof(PyGenerationManager),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT,
@@ -121,7 +121,6 @@ PyTypeObject PyGenerationManager = {
     .tp_getset = GenerationManager_getsetters,
     .tp_methods = GenerationManager_methods,
 };
-
 
 
 

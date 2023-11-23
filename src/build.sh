@@ -1,6 +1,6 @@
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)
 nvcc --ptxas-options=-v --compiler-options '-fPIC' -o libmaxmul.so --shared maxmul.cu &&
-gcc -shared -o neat.so -fPIC neat.c creature.c libmaxmul.so &&
+gcc -shared -o neat.so -fPIC neat.c creature.c generation_manager.c libmaxmul.so &&
 python3 testing.py
 
 #LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$(pwd)

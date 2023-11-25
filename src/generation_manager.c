@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "genome.h"
 #include "creature.h"
+#include <stdio.h>
 
 #define POPULATION_SIZE 500
 
@@ -92,13 +93,32 @@ static PyObject* GenerationManager_get_population_size(GenerationManager* self, 
 
 
 static PyObject* get_current_best(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
+    //printf("boom\n");
     Creature* creature;
+    //printf("bam\n");
     if (PyType_Ready(&PyCreature) != 0) {
         Py_RETURN_NONE;
     }
+    //printf("bum\n");
     creature = PyObject_New(Creature, &PyCreature);
+    //printf("bim\n");
     creature = (Creature*)PyObject_Init((PyObject*)creature, &PyCreature);
+    //printf("bow\n");
+    //Py_INCREF(&PyCreature); //this is a random attempt
+    //printf("biw\n");
     //PyObject_Dir((PyObject*)creature);
+
+    // solution: emulate creature's "new" function from creature.c
+    if (creature != NULL) {
+        creature->genome.nodes = NULL;
+        creature->genome.node_count = 0;
+        creature->genome.connections = NULL;
+        creature->genome.connection_count = 0;
+    }
+
+    //printf("bunk\n");
+
+
     return (PyObject*)creature;
 
     //Creature* creature;

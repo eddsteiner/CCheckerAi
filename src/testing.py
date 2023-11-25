@@ -33,6 +33,8 @@ generation_manager = neat.GenerationManager()
 print(generation_manager.POPULATION_SIZE)
 
 x = generation_manager.get_current_best()
+print(x)
+#print("what")
 
 
 

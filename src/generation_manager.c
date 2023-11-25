@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "genome.h"
+#include "creature.h"
 
 #define POPULATION_SIZE 500
 
@@ -49,8 +50,7 @@ static PyObject* GenerationManager_new(PyTypeObject* type, PyObject* args, PyObj
     GenerationManager* self;
     self = (GenerationManager*)type->tp_alloc(type, 0);
     if (self != NULL) {
-        //self->genome.nodes = NULL;
-        //self->genome.node_count = 0;
+        //self->genome.nodes = NULL; //self->genome.node_count = 0;
         //self->genome.connections = NULL;
         //self->genome.connection_count = 0;
         self->population_size = POPULATION_SIZE;
@@ -91,6 +91,34 @@ static PyObject* GenerationManager_get_population_size(GenerationManager* self, 
 */
 
 
+static PyObject* get_current_best(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
+    Creature* creature;
+    if (PyType_Ready(&PyCreature) != 0) {
+        Py_RETURN_NONE;
+    }
+    creature = PyObject_New(Creature, &PyCreature);
+    creature = (Creature*)PyObject_Init((PyObject*)creature, &PyCreature);
+    //PyObject_Dir((PyObject*)creature);
+    return (PyObject*)creature;
+
+    //Creature* creature;
+    //if (PyType_Ready(&PyCreature) != 0) {
+    //    Py_RETURN_NONE;
+    //}
+    //creature = (Creature*)PyObject_CallObject((PyObject*)&PyCreature, Py_BuildValue(""));
+    //creature = (Creature*)PyObject_CallObject((PyObject*)&PyCreature, Py_BuildValue(""));
+    //PyObject_Init((PyObject*)creature, &PyCreature);
+    //return (PyObject*)creature;
+}
+
+
+//static PyObject* get_current_generation(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
+//
+//}
+
+
+
+
 //static PyObject* total_gene_count(Creature* self, PyObject* Py_UNUSED(ignored)) {
 //    return PyLong_FromLong(self->genome.connection_count + self->genome.node_count);
 //}
@@ -117,6 +145,7 @@ static PyGetSetDef GenerationManager_getsetters[] = {
 
 static PyMethodDef GenerationManager_methods[] = {
     //{"total_gene_count", (PyCFunction)total_gene_count, METH_NOARGS, "total gene count"},
+    {"get_current_best", (PyCFunction)get_current_best, METH_NOARGS, "get current best"},
     {NULL},
 };
 

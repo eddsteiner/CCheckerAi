@@ -2,6 +2,8 @@
 #define GENOME_H_
 
 
+#define PY_SSIZE_T_CLEAN
+#include <python3.11/Python.h>
 #include <stdint.h>
 
 
@@ -29,12 +31,6 @@ typedef struct Genome {
     int node_count;
     int connection_count;
 } Genome;
-
-
-// Contains a genome and its resultant arrays, focused on the C backend.
-typedef struct CCreature {
-    Genome genome;
-} CCreature;
 
 
 /// Deallocate a genome

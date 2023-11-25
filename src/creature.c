@@ -5,20 +5,13 @@
 #include <python3.11/modsupport.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "genome.h"
+#include "creature.h"
 
 
 
 /*
     STRUCTS AND METHODS
 */
-
-
-// Contains a genome and its resultant arrays.
-typedef struct Creature {
-    PyObject_HEAD;
-    Genome genome;
-} Creature;
 
 
 static NodeGene* push_node(Genome* genome, NodeGene* node) {

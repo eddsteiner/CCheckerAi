@@ -71,6 +71,9 @@ class Architect:
         Returns True if process succeeded, False otherwise.
         """
 
+        #want to call the internal deallocation function, as well as the internal repopulate function
+        #just do a bunch of internal things and then call them here, while considering memory safety
+
         return self.neat.evolve(rankings.ctypes.data)
 
 

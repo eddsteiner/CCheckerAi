@@ -4,6 +4,8 @@
 class GenerationManager:
     """Manages all functionality for a NEAT generation."""
 
+    GENERATION_SIZE: int
+    """The size of a generation."""
     generation_number: int
     """The current generation's number."""
 

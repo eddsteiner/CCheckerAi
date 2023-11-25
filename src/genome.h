@@ -2,6 +2,9 @@
 #define GENOME_H_
 
 
+#include <stdint.h>
+
+
 // Contains one node gene in a genome.
 typedef struct NodeGene {
     int id; //unique
@@ -26,6 +29,12 @@ typedef struct Genome {
     int node_count;
     int connection_count;
 } Genome;
+
+
+// Contains a genome and its resultant arrays, focused on the C backend.
+typedef struct CCreature {
+    Genome genome;
+} CCreature;
 
 
 /// Deallocate a genome

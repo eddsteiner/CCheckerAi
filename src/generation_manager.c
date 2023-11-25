@@ -5,6 +5,9 @@
 #include <python3.11/modsupport.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "genome.h"
+
+#define POPULATION_SIZE 500
 
 
 
@@ -16,7 +19,8 @@
 // Contains a genome and its resultant arrays.
 typedef struct GenerationManager {
     PyObject_HEAD;
-    //Genome genome;
+    long population_size; //used by Python too
+    CCreature* population;
 } GenerationManager;
 
 
@@ -25,6 +29,14 @@ typedef struct GenerationManager {
 //    //free(genome->nodes);
 //    //free(genome->connections);
 //}
+
+
+// Manages deallocations when updating the population
+static void deallocate_population(CCreature** old, int count) {
+    for (int i = 999; i > 999 - count; i--) {
+        free(old[i]);
+    }
+}
 
 
 
@@ -41,6 +53,7 @@ static PyObject* GenerationManager_new(PyTypeObject* type, PyObject* args, PyObj
         //self->genome.node_count = 0;
         //self->genome.connections = NULL;
         //self->genome.connection_count = 0;
+        self->population_size = POPULATION_SIZE;
     }
     return (PyObject*) self;
 }

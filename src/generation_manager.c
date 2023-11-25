@@ -75,9 +75,9 @@ static void GenerationManager_dealloc(GenerationManager* self) {
 */
 
 
-//static PyObject* GenerationManager_get_node_count(GenerationManager* self, void* closure) {
-//    return PyLong_FromLong(self->genome.node_count);
-//}
+static PyObject* GenerationManager_get_population_size(GenerationManager* self, void* closure) {
+    return PyLong_FromLong(self->population_size);
+}
 
 
 //static PyObject* Creature_get_connection_count(Creature* self, void* closure) {
@@ -110,6 +110,7 @@ static PyMemberDef GenerationManager_members[] = {
 static PyGetSetDef GenerationManager_getsetters[] = {
     //{"node_count", (getter)Creature_get_node_count, (setter)NULL, "node count", NULL},
     //{"connection_count", (getter)Creature_get_connection_count, (setter)NULL, "connection count", NULL},
+    {"POPULATION_SIZE", (getter)GenerationManager_get_population_size, (setter)NULL, "population size", NULL},
     {NULL},
 };
 

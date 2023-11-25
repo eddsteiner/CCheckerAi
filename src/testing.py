@@ -29,5 +29,9 @@ print(x)
 print(creature.total_gene_count())
 
 
+generation_manager = neat.GenerationManager()
+print(generation_manager.POPULATION_SIZE)
+
+
 
 

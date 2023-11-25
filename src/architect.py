@@ -57,10 +57,8 @@ class Architect:
         Returns rankings as a numpy array.
         """
 
-        #rankings = np.zeros(self.GENERATION_SIZE, dtype = np.int32)
-
         #do all the tournament things here
-        rankings = np.array(range(GenerationManager.GENERATION_SIZE), dtype = np.int32)
+        rankings = np.array(range(GenerationManager.POPULATION_SIZE), dtype = np.int32)
         all_creatures = self.neat.get_current_generation()
 
         return rankings

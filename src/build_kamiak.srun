@@ -12,15 +12,7 @@
 #SBATCH --cpus-per-task=10         # Number of cores per task (threads)
 #SBATCH --gres=gpu:tesla:1         # Requesting 1 node with 1 GPU, can specify more than 1
 
-
-#nvcc -c -o libmaxmul.so maxmul.cu
-nvcc --ptxas-options=-v --compiler-options '-fPIC' -o libmaxmul.so --shared maxmul.cu &&
-gcc cudatest.c -o cudatest libmaxmul.so &&
-#gcc cudatest.c -o cudatest
-LD_LIBRARY_PATH=. ./cudatest
-
-#srun echo "Hello World"            # Run #tasks instances of program
-#echo "Hello World1"
+./build.sh
 
 
 

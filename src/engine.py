@@ -1,3 +1,5 @@
+from distutils.util import split_quoted
+from threading import active_count
 import numpy as np
 import numpy.typing as npt
 from typing import Any
@@ -447,5 +449,37 @@ class ChineseCheckersEngine:
                 main_board[start_pos] = 0
                 second_board[(80-start_pos) + ((-1)*action)] = 2
                 second_board[(80 - start_pos)] = 0
-
+            # print(self.keep_jumping(start_pos, action))
             return True
+
+
+    def keep_jumping(self, start_pos: int, action: int):
+        available_jumps = []
+        new_spot = start_pos + action
+
+        if self.current_player:
+            for moves in self.moves:
+                print("new spot", new_spot)
+                print("move: ", moves)
+                # Check if the move is valid
+                if self.make_move(new_spot, moves, self.current_player):
+                    print("move valid")
+                    # Check if the jump space is empty
+                    jump_spot = new_spot + (2 * moves)
+                    print(jump_spot)
+                    if jump_spot != start_pos - action:
+                        if self.board1[jump_spot] != 1:
+                            available_jumps.append(jump_spot)
+        # else:
+        #     for moves in self.moves:
+        #         # Check if the move is valid
+        #         if self.is_valid_move(self.board1, new_spot, moves):
+        #             # Check if the jump space is empty
+        #             jump_spot = new_spot + (2 * moves)
+        #             if self.board2[jump_spot] == 0:
+        #                 available_jumps.append(jump_spot)
+
+        return available_jumps
+
+                    
+                

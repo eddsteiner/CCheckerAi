@@ -44,7 +44,7 @@ static CCreature* fresh_generation() {
     CCreature* cur;
     for (int i = 0; i < POPULATION_SIZE; i++) {
         cur = &ret[i];
-        cur.
+        //TODO initialize dumb genomes, and run array initializer
     }
     return ret;
 }
@@ -59,14 +59,15 @@ static CCreature* fresh_generation() {
 static PyObject* GenerationManager_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     GenerationManager* self;
     self = (GenerationManager*)type->tp_alloc(type, 0);
-    if (self != NULL) {
-        //self->genome.nodes = NULL; //self->genome.node_count = 0;
-        //self->genome.connections = NULL;
-        //self->genome.connection_count = 0;
-        self->population_size = POPULATION_SIZE;
-        self->population = fresh_generation();
-        self->generation_number = 0;
+    if (self == NULL) {
+        Py_RETURN_NONE;
     }
+    //self->genome.nodes = NULL; //self->genome.node_count = 0;
+    //self->genome.connections = NULL;
+    //self->genome.connection_count = 0;
+    self->population_size = POPULATION_SIZE;
+    self->population = fresh_generation();
+    self->generation_number = 0;
     return (PyObject*) self;
 }
 

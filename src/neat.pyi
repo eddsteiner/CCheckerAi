@@ -45,8 +45,8 @@ class GenerationManager:
 class Creature:
     """An individual Creature which can play Chinese Checkers."""
 
-    node_count: int
-    connection_count: int
+    #node_count: int
+    #connection_count: int
 
     def calculate(self, board: int, output_buf: int) -> None:
         """
@@ -57,8 +57,8 @@ class Creature:
         The output buffer should be of size x.
         """
 
-    def total_gene_count(self) -> int:
-        """a"""
+    #def total_gene_count(self) -> int:
+    #    """a"""
 
 
 

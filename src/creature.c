@@ -1,3 +1,4 @@
+#include "genome.h"
 #define PY_SSIZE_T_CLEAN
 #include <python3.11/Python.h>
 #include <python3.11/structmember.h>
@@ -14,14 +15,14 @@
 */
 
 
-static NodeGene* push_node(Genome* genome, NodeGene* node) {
-    int cur_size = genome->node_count;
-    NodeGene* new_nodes = malloc(sizeof(NodeGene) * cur_size + 1);
-
-    // TODO
-
-    return new_nodes;
-}
+//static NodeGene* push_node(Genome* genome, NodeGene* node) {
+//    int cur_size = genome->node_count;
+//    NodeGene* new_nodes = malloc(sizeof(NodeGene) * cur_size + 1);
+//
+//    // TODO
+//
+//    return new_nodes;
+//}
 
 
 
@@ -33,12 +34,7 @@ static NodeGene* push_node(Genome* genome, NodeGene* node) {
 static PyObject* Creature_new(PyTypeObject* type, PyObject* args, PyObject* kwds) {
     Creature* self;
     self = (Creature*)type->tp_alloc(type, 0);
-    if (self != NULL) {
-        self->genome.nodes = NULL;
-        self->genome.node_count = 0;
-        self->genome.connections = NULL;
-        self->genome.connection_count = 0;
-    }
+    initialize_arrays(self->arrays);
     return (PyObject*) self;
 }
 
@@ -48,8 +44,8 @@ static int Creature_init(Creature *self, PyObject *args, PyObject *kwds) {
 }
 
 
-static void Creature_dealloc(Creature* self) {
-    dealloc_genome_internals(&self->genome); //deallocate the genome first
+static void Creature_dealloc(Creature* self) { 
+    //NOTE: INTERNALS DON'T GET DEALLOCATED, C HANDLES THIS
     Py_TYPE(self)->tp_free((PyObject*) self);
 }
 
@@ -60,14 +56,14 @@ static void Creature_dealloc(Creature* self) {
 */
 
 
-static PyObject* Creature_get_node_count(Creature* self, void* closure) {
-    return PyLong_FromLong(self->genome.node_count);
-}
+//static PyObject* Creature_get_node_count(Creature* self, void* closure) {
+//    return PyLong_FromLong(self->genome.node_count);
+//}
 
 
-static PyObject* Creature_get_connection_count(Creature* self, void* closure) {
-    return PyLong_FromLong(self->genome.connection_count);
-}
+//static PyObject* Creature_get_connection_count(Creature* self, void* closure) {
+//    return PyLong_FromLong(self->genome.connection_count);
+//}
 
 
 
@@ -76,9 +72,9 @@ static PyObject* Creature_get_connection_count(Creature* self, void* closure) {
 */
 
 
-static PyObject* total_gene_count(Creature* self, PyObject* Py_UNUSED(ignored)) {
-    return PyLong_FromLong(self->genome.connection_count + self->genome.node_count);
-}
+//static PyObject* total_gene_count(Creature* self, PyObject* Py_UNUSED(ignored)) {
+//    return PyLong_FromLong(self->genome.connection_count + self->genome.node_count);
+//}
 
 
 
@@ -93,14 +89,14 @@ static PyMemberDef Creature_members[] = {
 
 
 static PyGetSetDef Creature_getsetters[] = {
-    {"node_count", (getter)Creature_get_node_count, (setter)NULL, "node count", NULL},
-    {"connection_count", (getter)Creature_get_connection_count, (setter)NULL, "connection count", NULL},
+    //{"node_count", (getter)Creature_get_node_count, (setter)NULL, "node count", NULL},
+    //{"connection_count", (getter)Creature_get_connection_count, (setter)NULL, "connection count", NULL},
     {NULL},
 };
 
 
 static PyMethodDef Creature_methods[] = {
-    {"total_gene_count", (PyCFunction)total_gene_count, METH_NOARGS, "total gene count"},
+    //{"total_gene_count", (PyCFunction)total_gene_count, METH_NOARGS, "total gene count"},
     {NULL},
 };
 

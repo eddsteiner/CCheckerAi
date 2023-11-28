@@ -24,9 +24,9 @@ print(c)
 
 
 creature = neat.Creature()
-x = creature.connection_count
-print(x)
-print(creature.total_gene_count())
+#x = creature.connection_count
+#print(x)
+#print(creature.total_gene_count())
 
 
 generation_manager = neat.GenerationManager()

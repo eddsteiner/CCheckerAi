@@ -21,8 +21,13 @@
 // Contains a genome and its resultant arrays.
 typedef struct GenerationManager {
     PyObject_HEAD;
-    long population_size; //used by Python too
-    CCreature* population;
+
+    long population_size; //used by C and Python
+    long generation_number; //used by Python
+    long input_count;
+    long output_count;
+
+    CCreature* population; //used by C
 } GenerationManager;
 
 
@@ -33,11 +38,15 @@ typedef struct GenerationManager {
 //}
 
 
-// Manages deallocations when updating the population
-static void deallocate_population(CCreature** old, int count) {
-    for (int i = 999; i > 999 - count; i--) {
-        free(old[i]);
+// Initialize a new generation filled with dumb creatures
+static CCreature* fresh_generation() {
+    CCreature* ret = malloc(sizeof(CCreature) * POPULATION_SIZE);
+    CCreature* cur;
+    for (int i = 0; i < POPULATION_SIZE; i++) {
+        cur = &ret[i];
+        cur.
     }
+    return ret;
 }
 
 
@@ -55,6 +64,8 @@ static PyObject* GenerationManager_new(PyTypeObject* type, PyObject* args, PyObj
         //self->genome.connections = NULL;
         //self->genome.connection_count = 0;
         self->population_size = POPULATION_SIZE;
+        self->population = fresh_generation();
+        self->generation_number = 0;
     }
     return (PyObject*) self;
 }
@@ -92,49 +103,71 @@ static PyObject* GenerationManager_get_population_size(GenerationManager* self, 
 */
 
 
-static PyObject* get_current_best(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
-    //printf("boom\n");
-    Creature* creature;
-    //printf("bam\n");
-    if (PyType_Ready(&PyCreature) != 0) {
-        Py_RETURN_NONE;
+// Manages deallocations when updating the population
+static void deallocate_population(CCreature* old, int count) {
+    for (int i = 999; i > 999 - count; i--) {
+        deallocate_ccreature_internals(&old[i]);
     }
-    //printf("bum\n");
-    creature = PyObject_New(Creature, &PyCreature);
-    //printf("bim\n");
-    creature = (Creature*)PyObject_Init((PyObject*)creature, &PyCreature);
-    //printf("bow\n");
-    //Py_INCREF(&PyCreature); //this is a random attempt
-    //printf("biw\n");
-    //PyObject_Dir((PyObject*)creature);
-
-    // solution: emulate creature's "new" function from creature.c
-    if (creature != NULL) {
-        creature->genome.nodes = NULL;
-        creature->genome.node_count = 0;
-        creature->genome.connections = NULL;
-        creature->genome.connection_count = 0;
-    }
-
-    //printf("bunk\n");
-
-
-    return (PyObject*)creature;
-
-    //Creature* creature;
-    //if (PyType_Ready(&PyCreature) != 0) {
-    //    Py_RETURN_NONE;
-    //}
-    //creature = (Creature*)PyObject_CallObject((PyObject*)&PyCreature, Py_BuildValue(""));
-    //creature = (Creature*)PyObject_CallObject((PyObject*)&PyCreature, Py_BuildValue(""));
-    //PyObject_Init((PyObject*)creature, &PyCreature);
-    //return (PyObject*)creature;
+    free(old);
 }
 
 
-//static PyObject* get_current_generation(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
-//
-//}
+// Converts a CCreature to a Creature, but be warned about deallocation
+static PyObject* creature_as_python_pointer(CCreature* ccreature) {
+    Creature* creature;
+
+    if (PyType_Ready(&PyCreature) != 0) {
+        Py_RETURN_NONE;
+    }
+    creature = PyObject_New(Creature, &PyCreature);
+    creature = (Creature*)PyObject_Init((PyObject*)creature, &PyCreature);
+
+    if (creature == NULL) {
+        Py_RETURN_NONE;
+    }
+    creature->arrays = &ccreature->arrays;
+    return (PyObject*)creature;
+}
+
+
+// Converts a CCreature to a Creature, but copies all arrays
+static PyObject* creature_as_python_unique(CCreature* ccreature) {
+    Creature* creature;
+
+    if (PyType_Ready(&PyCreature) != 0) {
+        Py_RETURN_NONE;
+    }
+    creature = PyObject_New(Creature, &PyCreature);
+    creature = (Creature*)PyObject_Init((PyObject*)creature, &PyCreature);
+
+    if (creature == NULL) {
+        Py_RETURN_NONE;
+    }
+    copy_arrays(creature->arrays, &ccreature->arrays);
+    return (PyObject*)creature;
+}
+
+
+// Return the current best Creature in this generation (with a copied set of arrays)
+static PyObject* get_current_best(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
+    return creature_as_python_unique(&self->population[0]);
+}
+
+
+// Return the entire current generation as a Python list of Creatures
+static PyObject* get_current_generation(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
+    PyObject* gen_list = PyList_New(POPULATION_SIZE);
+    if (gen_list == NULL) {
+        Py_RETURN_NONE;
+    }
+    PyObject* cur_creature;
+    for (int i = 0; i < POPULATION_SIZE; i++) {
+        PyList_SetItem(gen_list, i, creature_as_python_pointer(&self->population[i]));
+    }
+    Py_RETURN_NONE;
+}
+
+
 
 
 

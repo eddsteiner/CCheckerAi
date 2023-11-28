@@ -9,3 +9,12 @@ void dealloc_genome_internals(Genome* genome) {
 }
 
 
+void dealloc_array_internals(Arrays* arrays) {
+    free(arrays->multiplier);
+    free(arrays->source);
+    free(arrays->dest);
+    free(arrays->output);
+    free(arrays->mult_threads);
+    free(arrays->output_threads);
+}
+

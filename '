@@ -71,7 +71,8 @@ static void initialize_arrays(Arrays* arrays) {
 
 
 // A nice way to copy an Arrays struct
-static void copy_arrays(Arrays* dest, Arrays* source) {
+static void copy_arrays(Arrays* source, Arrays* dest) {
+    printf("somehow here");
     dest->multiplier = (double*)malloc(sizeof(double) * source->multiplier_len);
     dest->source = (double*)malloc(sizeof(double) * source->source_len);
     dest->dest = (double*)malloc(sizeof(double) * source->dest_len);

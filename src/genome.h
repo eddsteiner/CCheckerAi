@@ -72,12 +72,20 @@ static void initialize_arrays(Arrays* arrays) {
 
 // A nice way to copy an Arrays struct
 static void copy_arrays(Arrays* dest, Arrays* source) {
+    printf("made it here\n");
+    if (dest == NULL) {
+        printf("dest is null\n");
+    }
+    if (source == NULL) {
+        printf("source is null\n");
+    }
     dest->multiplier = (double*)malloc(sizeof(double) * source->multiplier_len);
     dest->source = (double*)malloc(sizeof(double) * source->source_len);
     dest->dest = (double*)malloc(sizeof(double) * source->dest_len);
     dest->output = (double*)malloc(sizeof(double) * source->output_len);
     dest->mult_threads = (long*)malloc(sizeof(long) * source->mult_threads_len);
     dest->output_threads = (long*)malloc(sizeof(long) * source->output_threads_len);
+    printf("first block\n");
 
     memcpy(dest->multiplier, source->multiplier, sizeof(double) * source->multiplier_len);
     memcpy(dest->source, source->source, sizeof(double) * source->source_len);
@@ -92,6 +100,7 @@ static void copy_arrays(Arrays* dest, Arrays* source) {
     dest->output_len = source->output_len;
     dest->mult_threads_len = source->mult_threads_len;
     dest->output_threads_len = source->output_threads_len;
+    printf("no issues here\n");
 }
 
 

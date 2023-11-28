@@ -9,8 +9,6 @@
 #include "creature.h"
 #include <stdio.h>
 
-#define POPULATION_SIZE 500
-
 
 
 /*
@@ -39,13 +37,28 @@ typedef struct GenerationManager {
 
 
 // Initialize a new generation filled with dumb creatures
-static CCreature* fresh_generation() {
-    CCreature* ret = malloc(sizeof(CCreature) * POPULATION_SIZE);
+static CCreature* fresh_generation(GenerationManager* self) {
+    long input_count = self->input_count;
+    long output_count = self->output_count;
+    CCreature* ret = malloc(sizeof(CCreature) * self->population_size);
     CCreature* cur;
-    for (int i = 0; i < POPULATION_SIZE; i++) {
+    for (int i = 0; i < self->population_size; i++) {
         cur = &ret[i];
-        //TODO initialize dumb genomes, and run array initializer
+        cur->genome.node_count = input_count + output_count;
+        cur->genome.connection_count = 0;
+        cur->genome.connections = NULL;
+        cur->genome.nodes = malloc(sizeof(NodeGene) * (input_count + output_count));
+        NodeGene* nodes = cur->genome.nodes;
+        for (int j = 0; j < input_count; j++) {
+            nodes[j].id = j;
+            nodes[j].type = 0;
+        }
+        for (int j = input_count; j < input_count + output_count; j++) {
+            nodes[j].id = j;
+            nodes[j].type = 1;
+        }
     }
+    // run arrays initializer to convert the genes into arrays, need to make function for that
     return ret;
 }
 
@@ -65,14 +78,23 @@ static PyObject* GenerationManager_new(PyTypeObject* type, PyObject* args, PyObj
     //self->genome.nodes = NULL; //self->genome.node_count = 0;
     //self->genome.connections = NULL;
     //self->genome.connection_count = 0;
-    self->population_size = POPULATION_SIZE;
-    self->population = fresh_generation();
-    self->generation_number = 0;
+    //self->population_size = 0;
+    //self->population = fresh_generation();
+    //self->generation_number = 0;
     return (PyObject*) self;
 }
 
 
 static int GenerationManager_init(GenerationManager *self, PyObject *args, PyObject *kwds) {
+    static char *kwlist[] = {"input_count", "output_count", "population_size", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "lll", kwlist, &self->input_count, &self->output_count, &self->population_size)) {
+        return -1;
+    }
+    if (self->input_count < 1 || self->output_count < 1 || self->population_size < 1) {
+        PyErr_SetString(PyExc_ValueError, "input_count, output_count, and population_size must be integers greater than 0");
+        return -1;
+    }
+    self->generation_number = 0;
     return 0;
 }
 
@@ -157,12 +179,12 @@ static PyObject* get_current_best(GenerationManager* self, PyObject* Py_UNUSED(i
 
 // Return the entire current generation as a Python list of Creatures
 static PyObject* get_current_generation(GenerationManager* self, PyObject* Py_UNUSED(ignored)) {
-    PyObject* gen_list = PyList_New(POPULATION_SIZE);
+    PyObject* gen_list = PyList_New(self->population_size);
     if (gen_list == NULL) {
         Py_RETURN_NONE;
     }
     PyObject* cur_creature;
-    for (int i = 0; i < POPULATION_SIZE; i++) {
+    for (int i = 0; i < self->population_size; i++) {
         PyList_SetItem(gen_list, i, creature_as_python_pointer(&self->population[i]));
     }
     Py_RETURN_NONE;
@@ -192,7 +214,7 @@ static PyMemberDef GenerationManager_members[] = {
 static PyGetSetDef GenerationManager_getsetters[] = {
     //{"node_count", (getter)Creature_get_node_count, (setter)NULL, "node count", NULL},
     //{"connection_count", (getter)Creature_get_connection_count, (setter)NULL, "connection count", NULL},
-    {"POPULATION_SIZE", (getter)GenerationManager_get_population_size, (setter)NULL, "population size", NULL},
+    {"population_size", (getter)GenerationManager_get_population_size, (setter)NULL, "population size", NULL},
     {NULL},
 };
 

@@ -29,8 +29,10 @@ creature = neat.Creature()
 #print(creature.total_gene_count())
 
 
-generation_manager = neat.GenerationManager()
-print(generation_manager.POPULATION_SIZE)
+generation_manager = neat.GenerationManager(10, 3, 500)
+if generation_manager == None:
+    print("Could not initialize generation manager!")
+print(generation_manager.population_size)
 
 x = generation_manager.get_current_best()
 print(x)

@@ -3,11 +3,11 @@
 #include <python3.11/structmember.h>
 #include <python3.11/floatobject.h>
 #include <python3.11/modsupport.h>
-#include <stdint.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdio.h>
 #include "genome.h"
 #include "creature.h"
-#include <stdio.h>
 
 
 
@@ -36,28 +36,54 @@ typedef struct GenerationManager {
 //}
 
 
+// Topological sort for a potential genome, returns NULL if invalid genome
+static Topo* toposort(Genome* genome) {
+    int len = genome->node_count;
+    return NULL;
+}
+
+
 // Initialize a new generation filled with dumb creatures
 static CCreature* fresh_generation(GenerationManager* self) {
     long input_count = self->input_count;
     long output_count = self->output_count;
     CCreature* ret = malloc(sizeof(CCreature) * self->population_size);
     CCreature* cur;
+    int random;
+
+    // for every Creature
     for (int i = 0; i < self->population_size; i++) {
         cur = &ret[i];
         cur->genome.node_count = input_count + output_count;
-        cur->genome.connection_count = 0;
-        cur->genome.connections = NULL;
+        cur->genome.connection_count = input_count * output_count;
         cur->genome.nodes = malloc(sizeof(NodeGene) * (input_count + output_count));
+        cur->genome.connections = malloc(sizeof(ConnectionGene) * (input_count * output_count));
         NodeGene* nodes = cur->genome.nodes;
+        ConnectionGene* connections = cur->genome.connections;
+
+        // create input nodes
         for (int j = 0; j < input_count; j++) {
             nodes[j].id = j;
             nodes[j].type = 0;
         }
-        for (int j = input_count; j < input_count + output_count; j++) {
-            nodes[j].id = j;
-            nodes[j].type = 1;
+
+        // create output nodes and connections
+        for (int j = 0; j < output_count; j++) { //for every output
+            nodes[j + input_count].id = j + input_count; //create output node
+            nodes[j + input_count].type = 1;
+
+            for (int k = 0; k < input_count; k++) { //connect this output node to every input
+                connections[j * input_count + k].in = k;
+                connections[j * input_count + k].out = j + input_count;
+                connections[j * input_count + k].innov = j * input_count + k;
+                random = rand(); //positive up to 2_147_483_647
+                connections[j * input_count + k].weight = (double)random / 214748364 - 5; //randomized from -5 to 5
+                random = rand(); //positive up to 2_147_483_647
+                connections[j * input_count + k].enabled = random % 2; //randomized 0 or 1
+            }
         }
     }
+
     // run arrays initializer to convert the genes into arrays, need to make function for that
     return ret;
 }

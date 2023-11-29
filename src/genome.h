@@ -20,7 +20,7 @@ typedef struct ConnectionGene {
     int out;
     double weight;
     uint8_t enabled; //0 = disabled, 1 = enabled, 2 = end/delimiter
-    int innov; //shared across genomes, combination of in and out
+    long innov; //shared across genomes, combination of in and out
 } ConnectionGene;
 
 
@@ -48,6 +48,13 @@ typedef struct Arrays {
     long mult_threads_len;
     long output_threads_len;
 } Arrays;
+
+
+typedef struct Topo {
+    int layers;
+    int* layer_sizes;
+    int* ids;
+} Topo;
 
 
 // A nice way to initialize Arrays

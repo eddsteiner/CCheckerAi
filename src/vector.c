@@ -12,35 +12,28 @@ Vector* vector_new(int elem_size) {
     vec->length = 0;
     vec->elem_size = elem_size;
     vec->elems = malloc(elem_size * 2);
-    printf("size: %d\n", vec->elem_size);
     return vec;
 }
 
 
 // Simple method to push onto a Vector
 void vector_push(Vector* vec, void* val) {
-    //printf("capacity: %d, length: %d\n", vec->capacity, vec->length);
-    printf("address: %ld\n", (long)vec->elems);
     char* bval = (char*)val;
     if (vec->length < vec->capacity) { //simply append the new value
         for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
             vec->elems[vec->length * vec->elem_size + i] = bval[i];
-            printf("pushed (%d) to address: %ld\n", bval[i], (long)(&vec->elems[vec->length * vec->elem_size + i]));
         }
         vec->length = vec->length + 1;
     } else { //need to reallocate, then push
-        printf("reallocating\n");
         char* new_elems = malloc(vec->elem_size * vec->capacity * 2);
         memcpy(new_elems, vec->elems, vec->elem_size * vec->capacity);
         free(vec->elems);
         vec->elems = new_elems;
         vec->capacity = vec->capacity * 2;
-        printf("new address: %ld\n", (long)vec->elems);
 
         // now push after reallocating
         for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
             vec->elems[vec->length * vec->elem_size + i] = bval[i];
-            printf("pushed (%d) to address: %ld\n", bval[i], (long)(&vec->elems[vec->length * vec->elem_size + i]));
         }
         vec->length = vec->length + 1;
     }

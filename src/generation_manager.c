@@ -84,6 +84,15 @@ static void* vector_index(Vector* vec, int index) {
 }
 
 
+// Update a vector
+static void vector_update(Vector* vec, int index, void* val) {
+    char* cur = vector_index(vec, index);
+    for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
+        cur[i] = ((char*)val)[i];
+    }
+}
+
+
 typedef struct Bucket {
     int in;
     Vector* outs;

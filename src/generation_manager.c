@@ -36,9 +36,65 @@ typedef struct GenerationManager {
 //}
 
 
+typedef struct Vector {
+    int capacity;
+    int length;
+    int elem_size;
+    char* elems;
+} Vector;
+
+
+// Create a new vector with default new size of 2
+static Vector* vector_new(int elem_size) {
+    Vector* vec = malloc(sizeof(Vector));
+    vec->capacity = 2;
+    vec->length = 0;
+    vec->elem_size = elem_size;
+    vec->elems = malloc(elem_size * 2);
+    return vec;
+}
+
+
+// Simple method to push onto a Vector
+static void vector_push(Vector* vec, void* val) {
+    char* bval = (char*)val;
+    if (vec->length < vec->capacity - 1) { //simply append the new value
+        for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
+            vec->elems[vec->length * vec->elem_size + i] = bval[i];
+        }
+        vec->length = vec->length + 1;
+    } else { //need to reallocate, then push
+        char* new_elems = malloc(vec->elem_size * vec->capacity * 2);
+        memcpy(new_elems, vec->elems, vec->elem_size * vec->capacity);
+        free(vec->elems);
+        vec->elems = new_elems;
+
+        // now push after reallocating
+        for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
+            vec->elems[vec->length * vec->elem_size + i] = bval[i];
+        }
+        vec->length = vec->length + 1;
+    }
+}
+
+
+// Index a vector
+static void* vector_index(Vector* vec, int index) {
+    return &vec[index * vec->elem_size];
+}
+
+
+typedef struct Bucket {
+    int in;
+    Vector* outs;
+} Bucket;
+
+
 // Topological sort for a potential genome, returns NULL if invalid genome
 static Topo* toposort(Genome* genome) {
     int len = genome->node_count;
+    //int* layer_nums
+    Vector* buckets = vector_new(sizeof(Bucket));
     return NULL;
 }
 

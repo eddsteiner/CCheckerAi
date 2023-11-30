@@ -86,7 +86,7 @@ int vector_in(Vector* vec, void* val) {
 HashTable* hashtable_new(int elem_size) {
     HashTable* hashtable = malloc(sizeof(HashTable));
     for (int i = 0; i < HASHTABLE_SIZE; i++) { //initialize all vectors
-        hashtable->buckets[i] = *vector_new(sizeof(Vector*));
+        hashtable->buckets[i] = *vector_new(elem_size);
         printf("##### stats, %d\n", hashtable->buckets[i].elem_size);
     }
     return hashtable;
@@ -106,6 +106,7 @@ int hashtable_hash_simple(int* nums, int size) {
 // Push a new element onto the hashmap based on the provided hash
 void hashtable_push(HashTable* hashtable, void* elem, int hash) {
     vector_push(&hashtable->buckets[hash], elem);
+    printf("aaaaaaaaa: %ld\n", (long)vector_index(&hashtable->buckets[hash], 0)); //somehow not the same???
     printf("##### stats, %d\n", hashtable->buckets[hash].elem_size);
 }
 
@@ -131,6 +132,7 @@ int hashtable_contains_int_vector(HashTable* hashtable, Vector* ints) {
         //printf("before!\n");
         //cur = (Vector*)(matches->elems[i]);
         cur = vector_index(matches, i);
+        printf("cur: %ld\n", (long)cur);
         //printf("after!\n");
         if (size != cur->length) { //sizes do not match, cannot be the same list
             printf("sizes didnt match, %d %d\n", size, cur->length);
@@ -174,7 +176,8 @@ void hashtable_push_int_vector(HashTable* hashtable, Vector* ints) {
     // push if not in the table yet
     int hash = hashtable_hash_simple(arr, size);
     printf("hash: %d\n", hash);
-    hashtable_push(hashtable, arr, hash);
+    printf("bouta_push_ints: %ld\n", (long)ints);
+    hashtable_push(hashtable, ints, hash);
 }
 
 

@@ -5,7 +5,8 @@
 
 void test_hashtable() {
     int* buf = malloc(sizeof(int));
-    HashTable* ht = hashtable_new(sizeof(int*));
+    HashTable* ht = hashtable_new(sizeof(Vector*));
+    printf("##### statsffffff, %d\n", ht->buckets[100].elem_size);
     int* list = malloc(sizeof(int) * 10);
     list[0] = 18;
     list[1] = 10;
@@ -36,6 +37,7 @@ void test_hashtable() {
     printf("a\n");
 
     printf("contained: %d\n", hashtable_contains_int_vector(ht, ints));
+    printf("ints: %ld\n", (long)ints);
     hashtable_push_int_vector(ht, ints);
     printf("contained: %d\n", hashtable_contains_int_vector(ht, ints));
 }

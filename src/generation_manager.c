@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "genome.h"
 #include "creature.h"
+#include "vector.h"
 
 
 
@@ -36,74 +37,50 @@ typedef struct GenerationManager {
 //}
 
 
-typedef struct Vector {
-    int capacity;
-    int length;
-    int elem_size;
-    char* elems;
-} Vector;
-
-
-// Create a new vector with default new size of 2
-static Vector* vector_new(int elem_size) {
-    Vector* vec = malloc(sizeof(Vector));
-    vec->capacity = 2;
-    vec->length = 0;
-    vec->elem_size = elem_size;
-    vec->elems = malloc(elem_size * 2);
-    return vec;
-}
-
-
-// Simple method to push onto a Vector
-static void vector_push(Vector* vec, void* val) {
-    char* bval = (char*)val;
-    if (vec->length < vec->capacity - 1) { //simply append the new value
-        for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
-            vec->elems[vec->length * vec->elem_size + i] = bval[i];
-        }
-        vec->length = vec->length + 1;
-    } else { //need to reallocate, then push
-        char* new_elems = malloc(vec->elem_size * vec->capacity * 2);
-        memcpy(new_elems, vec->elems, vec->elem_size * vec->capacity);
-        free(vec->elems);
-        vec->elems = new_elems;
-
-        // now push after reallocating
-        for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
-            vec->elems[vec->length * vec->elem_size + i] = bval[i];
-        }
-        vec->length = vec->length + 1;
-    }
-}
-
-
-// Index a vector
-static void* vector_index(Vector* vec, int index) {
-    return &vec[index * vec->elem_size];
-}
-
-
-// Update a vector
-static void vector_update(Vector* vec, int index, void* val) {
-    char* cur = vector_index(vec, index);
-    for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
-        cur[i] = ((char*)val)[i];
-    }
-}
-
-
 typedef struct Bucket {
     int in;
-    Vector* outs;
+    Vector* outs; //vector of ints
 } Bucket;
 
 
 // Topological sort for a potential genome, returns NULL if invalid genome
-static Topo* toposort(Genome* genome) {
+static Topo* toposort(GenerationManager* self, Genome* genome) {
     int len = genome->node_count;
-    //int* layer_nums
     Vector* buckets = vector_new(sizeof(Bucket));
+    Vector* bucket_labels = vector_new(sizeof(int)); //helps to index buckets
+    ConnectionGene* cur_connection;
+
+    // first push all the input nodes to the buckets
+    for (int i = 0; i < self->input_count; i++) {
+        Bucket* new_buck = malloc(sizeof(Bucket));
+        new_buck->in = genome->nodes->id;
+        new_buck->outs = vector_new(sizeof(int));
+    }
+
+    // then push all the connections
+    for (int i = 0; i < genome->connection_count; i++) {
+        cur_connection = &genome->connections[i];
+
+        if (cur_connection->enabled == 0) { //skip any disabled connections
+            continue;
+        }
+
+        int index = vector_in(bucket_labels, &cur_connection->in);
+        if (index > -1) { //we've already got this node in the buckets, so find it and append this node
+            Bucket* cur_buck = vector_index(buckets, cur_connection->in);
+            vector_push(cur_buck->outs, &cur_connection->out);
+        } else { //we don't have this node yet, push it and append this node
+            vector_push(bucket_labels, &cur_connection->in); //push the name of the new in to buckets
+            Bucket* new_buck = malloc(sizeof(Bucket));
+            new_buck->in = cur_connection->in;
+            new_buck->outs = vector_new(sizeof(int*));
+            vector_push(new_buck->outs, &cur_connection->out); //push the connection
+            vector_push(buckets, new_buck); //push the new bucket to the overall list of buckets
+        }
+    }
+
+    // now run the actual toposort
+
     return NULL;
 }
 

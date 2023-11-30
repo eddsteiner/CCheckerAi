@@ -10,6 +10,11 @@ typedef struct Vector {
 } Vector;
 
 
+typedef struct HashMap {
+    void** buckets;
+} HashMap;
+
+
 Vector* vector_new(int elem_size);
 void vector_push(Vector* vec, void* val);
 void* vector_index(Vector* vec, int index);

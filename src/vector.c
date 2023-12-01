@@ -22,8 +22,6 @@ Vector* vector_new(int elem_size) {
 // Simple method to push onto a Vector
 void vector_push(Vector* vec, void* val) {
     char* bval = (char*)val;
-    //char* bval = malloc(sizeof(vec->elem_size));
-    //memcpy(bval, )
     if (vec->length < vec->capacity) { //simply append the new value
         for (int i = 0; i < vec->elem_size; i++) { //push all bytes for the new value
             vec->elems[vec->length * vec->elem_size + i] = bval[i];
@@ -66,7 +64,6 @@ int vector_in(Vector* vec, void* val) {
     char* index;
     int in;
     for (int i = 0; i < vec->length; i++) { //for each element
-        //printf("a\n");
         index = (char*)vector_index(vec, i);
         in = 1;
         for (int j = 0; j < vec->elem_size; j++) { //for each byte of an element
@@ -78,7 +75,6 @@ int vector_in(Vector* vec, void* val) {
         if (in == 1) {
             return i;
         }
-        //printf("b\n");
     }
     return -1;
 }
@@ -89,7 +85,6 @@ HashTable* hashtable_new(int elem_size) {
     HashTable* hashtable = malloc(sizeof(HashTable));
     for (int i = 0; i < HASHTABLE_SIZE; i++) { //initialize all vectors
         hashtable->buckets[i] = *vector_new(elem_size);
-        printf("##### stats, %d\n", hashtable->buckets[i].elem_size);
     }
     return hashtable;
 }
@@ -107,98 +102,36 @@ int hashtable_hash_simple(int* nums, int size) {
 
 // Push a new element onto the hashmap based on the provided hash
 void hashtable_push(HashTable* hashtable, void* elem, int hash) {
-    //printf("cccccccccccccccccc %ld ===============\n", (long)elem); //this is correct!!!
-
-    //Vector* match = hashtable_match(hashtable, hash);
-    //printf("##### statsmmmm, %d\n", match->elem_size);
-    //long* buf = malloc(sizeof(long));
-    //*buf = (long)elem;
-    //printf("---------- %ld\n", *buf);
-    //char a = ((char*)buf)[0];
-    //char b = ((char*)buf)[1];
-    //char c = ((char*)buf)[2];
-    //char d = ((char*)buf)[3];
-    //printf("---------- %d %d %d %d\n", a, b, c, d);
-    //vector_push(match, buf);
-    //a = match->elems[0];
-    //b = match->elems[1];
-    //c = match->elems[2];
-    //d = match->elems[3];
-    //printf("---------- %d %d %d %d\n", a, b, c, d);
-    //long* bb = vector_index(match, 0);
-    //a = ((char*)bb)[0];
-    //b = ((char*)bb)[1];
-    //c = ((char*)bb)[2];
-    //d = ((char*)bb)[3];
-    //printf("---------- %d %d %d %d\n", a, b, c, d);
-
-    
-    
-    // so this is fine
     long* buf = malloc(sizeof(long));
     *buf = (long)elem;
-    //printf("adsf %ld ===============\n", (long)*buf); //good, so the address we want to copy is in fact in buf
     vector_push(&(hashtable->buckets[hash]), buf);
-    //printf("aaaaaaaaa: %ld ===\n", (long)(vector_index(&(hashtable->buckets[hash]), 0)));
-    //printf("aaaaaaaaa: %ld ===\n", *(long*)(vector_index(&(hashtable->buckets[hash]), 0))); //this is what we want
-    //long x = *(long*)vector_index(&hashtable->buckets[hash], 0);
-    //printf("aaaaaaaaa: %ld ===\n", x); //this is what we want
-
-    //printf("##### statsmmmm, %d\n", hashtable->buckets[hash].elem_size);
-    //printf("bbbbbbbbbbbb %d\n", hashtable_match(hashtable, hash)->elem_size);
-    //printf("bbbbbbbbbbbb %d\n", hashtable_match(hashtable, hash)->length);
-    //Vector* match = hashtable_match(hashtable, hash);
-    //printf("bbbbbbbbbbbb %d\n", ((Vector*)vector_index(match, 0))->length);
-    //printf("bbbbbbbbbbbb %d\n", ((Vector*)vector_index(match, 0))->elem_size);
-    //printf("bbbbbbbbbbbb %ld <<<<<<<<<<<<<<\n", (long)(vector_index(match, 0))); //this should match the address we added before
-    //printf("bbbbbbbbbbbb %ld >>>>>>>>>>>>>>\n", (long)(vector_index(&hashtable->buckets[hash], 0))); //this should match the address we added before
-    ;
 }
 
 
 // Retrieve the vectors correlating to the given hash
 Vector* hashtable_match(HashTable* hashtable, int hash) {
     return &hashtable->buckets[hash];
-    printf("##### stats, %d\n", hashtable->buckets[hash].elem_size);
 }
 
 
 // Simple verification for int vectors
 int hashtable_contains_int_vector(HashTable* hashtable, Vector* ints) {
-    printf("##### statsn, %d\n", ints->elem_size);
     int* arr = (int*)ints->elems;
     int size = ints->length;
     Vector* cur;
     int hash = hashtable_hash_simple(arr, size); //generate hash for the new vector
     Vector* matches = hashtable_match(hashtable, hash); //get the existing values
-    printf("matches length: %d\n", matches->length);
-    printf("##### statsaa, %d\n", matches->elem_size);
     for (int i = 0; i < matches->length; i++) { //iterate through all lists
-        //printf("before!\n");
-        //cur = (Vector*)(matches->elems[i]);
         cur = *(Vector**)vector_index(matches, i);
-        printf("cur: %ld\n", (long)cur);
-        //printf("after!\n");
         if (size != cur->length) { //sizes do not match, cannot be the same list
-            printf("sizes didnt match, %d %d\n", size, cur->length);
             continue;
         }
-        printf("thing elemsize: %d\n", cur->elem_size);
         int pass = 1;
         for (int j = 0; j < size; j++) { //check every element
-            printf("thing size: %d\n", cur->length);
-            printf("thing elemsize: %d\n", cur->elem_size);
-            int x = *(int*)vector_index(cur, j);
-            printf("aaaaa\n");
-            int y = arr[j];
-            int z = x == y;
-            //if (arr[j] != (*(int*)vector_index(cur, j))) { //no match, continue to next list
-            if (!z) { //no match, continue to next list
-                printf("bbbbb\n");
+            if (arr[j] != *(int*)vector_index(cur, j)) { //no match, continue to next list
                 pass = 0;
                 break;
             }
-            printf("bbbbb\n");
         }
         if (pass == 1) { //we found no differences between the two lists, pass
             return 1;
@@ -220,8 +153,6 @@ void hashtable_push_int_vector(HashTable* hashtable, Vector* ints) {
 
     // push if not in the table yet
     int hash = hashtable_hash_simple(arr, size);
-    printf("hash: %d\n", hash);
-    printf("bouta_push_ints: %ld\n", (long)ints); //still correct
     hashtable_push(hashtable, ints, hash);
 }
 

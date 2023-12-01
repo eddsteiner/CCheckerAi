@@ -114,7 +114,7 @@ Vector* hashtable_match(HashTable* hashtable, int hash) {
 }
 
 
-// Simple verification for int vectors
+// Simple verification for int vectors, returns 0 or 1
 int hashtable_contains_int_vector(HashTable* hashtable, Vector* ints) {
     int* arr = (int*)ints->elems;
     int size = ints->length;

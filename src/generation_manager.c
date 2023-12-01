@@ -26,6 +26,10 @@ typedef struct GenerationManager {
     long input_count;
     long output_count;
 
+    int initialized; //0 until a new population is generated or one is loaded
+    Vector* input_node_ids; //makes life easier
+    Vector* output_node_ids; //makes life easier
+
     CCreature* population; //used by C
 } GenerationManager;
 
@@ -44,10 +48,12 @@ typedef struct Bucket {
 
 
 // Topological sort for a potential genome, returns NULL if invalid genome
-static Topo* toposort(GenerationManager* self, Genome* genome) {
+static Vector* toposort(GenerationManager* self, Genome* genome) {
+    long* bufl = malloc(sizeof(long*)); //for all interfacing needs
+    int* buf = malloc(sizeof(int*)); //for all interfacing needs
     int len = genome->node_count;
-    Vector* buckets = vector_new(sizeof(Bucket));
-    Vector* bucket_labels = vector_new(sizeof(int)); //helps to index buckets
+    Vector* buckets = vector_new(sizeof(Bucket)); //contains a list of buckets, each having an "in" and many "outs", all ids of nodes
+    Vector* bucket_labels = vector_new(sizeof(int)); //helps to index buckets, contains the "in" for each bucket
     ConnectionGene* cur_connection;
 
     // first push all the input nodes to the buckets
@@ -57,41 +63,124 @@ static Topo* toposort(GenerationManager* self, Genome* genome) {
         new_buck->outs = vector_new(sizeof(int));
     }
 
-    // then push all the connections
+    // then push all the connections (excluding output nodes)
     for (int i = 0; i < genome->connection_count; i++) {
         cur_connection = &genome->connections[i];
 
         if (cur_connection->enabled == 0) { //skip any disabled connections
             continue;
         }
+        if (vector_in(self->output_node_ids, &cur_connection->out)) { //don't push output nodes to a bucket
+            continue;
+        }
 
-        int index = vector_in(bucket_labels, &cur_connection->in);
-        if (index > -1) { //we've already got this node in the buckets, so find it and append this node
-            Bucket* cur_buck = vector_index(buckets, cur_connection->in);
-            vector_push(cur_buck->outs, &cur_connection->out);
+        *buf = cur_connection->in;
+        int index = vector_in(bucket_labels, buf); //see if we already have this bucket
+        if (index > -1) { //we've already got this node in the buckets, so grab it and append this node
+            Bucket* cur_buck = vector_index(buckets, index);
+            vector_push(cur_buck->outs, &cur_connection->out); //push the id of this connection's out node
         } else { //we don't have this node yet, push it and append this node
             vector_push(bucket_labels, &cur_connection->in); //push the name of the new in to buckets
             Bucket* new_buck = malloc(sizeof(Bucket));
             new_buck->in = cur_connection->in;
             new_buck->outs = vector_new(sizeof(int*));
             vector_push(new_buck->outs, &cur_connection->out); //push the connection
-            vector_push(buckets, new_buck); //push the new bucket to the overall list of buckets
+            *bufl = (long)new_buck;
+            vector_push(buckets, bufl); //push the new bucket's address to the overall list of buckets
         }
     }
 
-    // now run the actual toposort
+    // we have the buckets, now run the actual toposort
+    // start by pushing the input nodes
+    Vector* cur_layer = vector_new(sizeof(int)); //remember to start with only the input nodes
+    Vector* new_layer;
+    Vector* layer_nums = vector_new(sizeof(int)); //the final layer number for every node
+    Vector* layer_labels = vector_new(sizeof(int)); //used to index the layer_nums vector
+    for (int i = 0; i < self->input_count; i++) {
+        *buf = i;
+        vector_push(cur_layer, buf); //input nodes are always numbered 0..n
+        vector_push(layer_labels, buf);
+        *buf = 0;
+        vector_push(layer_labels, buf); //start all nodes on layer 0
+    }
 
+    // now keep calculating the new layers until we reach only output nodes
+    HashTable* hashtable = hashtable_new(sizeof(Vector*)); //store vectors of ints
+    int running = 1;
+    int loop_count = 0;
+    while (running) { //runs once for every layer, making sure we haven't seen a particular layer before
+        loop_count += 1;
+        new_layer = vector_new(sizeof(int)); //create the next layer
+        for (int i = 0; i < cur_layer->length; i++) { //want to iterate through all the current nodes
+            int cur_node = *(int*)vector_index(cur_layer, i); //the node id we're currently looking at
+            *buf = cur_node;
+            int index = vector_in(bucket_labels, buf); //grab the bucket for the current node if it exists (it should)
+            Bucket* cur_bucket = *(Bucket**)vector_index(buckets, index);
+            if (cur_bucket->in != cur_node) {
+                printf("BIGGGG ERRORRRRRRRR\n");
+                //TODO DEALLOCATE
+                return NULL;
+            }
+            Vector* outs = cur_bucket->outs;
+            for (int j = 0; j < outs->length; j++) { //append all the outs to the new layer (no output nodes should be in any bucket)
+                if (vector_in(new_layer, vector_index(outs, j)) == -1) { //if we haven't seen this out node before push it
+                    vector_push(new_layer, vector_index(outs, j));
+                }
+            }
+        }
+
+        // all the nodes of the next layer have been pushed to new_layer
+        // check whether this layer is unique or empty (output nodes shouldn't be part of the problem)
+        //int hash = hashtable_hash_simple((void*)cur_layer->elems, cur_layer->length);
+        if (new_layer->length == 0) { //empty, so we're done! finish up
+            //int max_layer = loop_count - 1; //this loop didn't result in a new layer so we finished one ago
+            Vector* layers = malloc(sizeof(Vector) * loop_count); //one vector per layer
+            for (int i = 0; i < loop_count; i++) {
+                layers[i] = *vector_new(sizeof(int)); //initialize all vectors
+            }
+            for (int i = 0; i < layer_nums->length; i++) { //go through all node ids and their layers
+                int index = *(int*)vector_index(layer_nums, i);
+                int* id = (int*)vector_index(layer_labels, i);
+                vector_push(&layers[index], id); //push the id to the layer vector
+            }
+            return layers;
+            
+            //TODO DEALLOCATE
+        }
+
+        int contained = hashtable_contains_int_vector(hashtable, new_layer);
+        if (contained == 1) { //we've already seen this vector before, genome is NOT ACYCLIC!!!
+            //TODO DEALLOCATE
+            return NULL;
+        }
+
+        // the new layer is not empty, so we'll have to update the layer nums and keep going
+        for (int i = 0; i < new_layer->length; i++) {
+            int* id = (int*)vector_index(new_layer, i); //grab the current node's id
+            int index = vector_in(layer_labels, id); //grab the id's index
+            *buf = loop_count;
+            vector_update(layer_nums, *id, buf); //use this index to update the id's layer number
+        }
+        hashtable_push_int_vector(hashtable, new_layer); //remember this layer
+
+        cur_layer = new_layer;
+    }
+
+    // unsure how to get here
     return NULL;
 }
 
 
 // Initialize a new generation filled with dumb creatures
 static CCreature* fresh_generation(GenerationManager* self) {
+    int* buf = malloc(sizeof(int));
     long input_count = self->input_count;
     long output_count = self->output_count;
     CCreature* ret = malloc(sizeof(CCreature) * self->population_size);
     CCreature* cur;
     int random;
+    self->input_node_ids = vector_new(sizeof(int)); //we'll update the handy input and output node ids too
+    self->output_node_ids = vector_new(sizeof(int));
 
     // for every Creature
     for (int i = 0; i < self->population_size; i++) {
@@ -107,12 +196,16 @@ static CCreature* fresh_generation(GenerationManager* self) {
         for (int j = 0; j < input_count; j++) {
             nodes[j].id = j;
             nodes[j].type = 0;
+            *buf = j; 
+            vector_push(self->input_node_ids, buf); //makes life easier
         }
 
         // create output nodes and connections
         for (int j = 0; j < output_count; j++) { //for every output
             nodes[j + input_count].id = j + input_count; //create output node
             nodes[j + input_count].type = 1;
+            *buf = j + input_count; 
+            vector_push(self->output_node_ids, buf); //makes life easier
 
             for (int k = 0; k < input_count; k++) { //connect this output node to every input
                 connections[j * input_count + k].in = k;
@@ -124,9 +217,17 @@ static CCreature* fresh_generation(GenerationManager* self) {
                 connections[j * input_count + k].enabled = random % 2; //randomized 0 or 1
             }
         }
+
+        // run toposort and get back the results
+        Vector* topo = toposort(self, &cur->genome);
+
+        // run arrays initializer to convert the genes into arrays, need to make function for that
+        // TODO
+
+
     }
 
-    // run arrays initializer to convert the genes into arrays, need to make function for that
+    //printf("testing, here\n");
     return ret;
 }
 
@@ -163,6 +264,8 @@ static int GenerationManager_init(GenerationManager *self, PyObject *args, PyObj
         return -1;
     }
     self->generation_number = 0;
+    self->initialized = 0;
+    // need to create a fresh generation here, or keep a boolean that says you need to call a fresh generation or load one
     return 0;
 }
 

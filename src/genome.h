@@ -50,11 +50,11 @@ typedef struct Arrays {
 } Arrays;
 
 
-typedef struct Topo {
-    int layers;
-    int* layer_sizes;
-    int* ids;
-} Topo;
+//typedef struct Topo {
+//    int layers;
+//    int* layer_sizes;
+//    int* ids;
+//} Topo;
 
 
 // A nice way to initialize Arrays

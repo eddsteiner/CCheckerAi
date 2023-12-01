@@ -33,10 +33,10 @@ generation_manager = neat.GenerationManager(10, 3, 500)
 if generation_manager == None:
     print("Could not initialize generation manager!")
 print(generation_manager.population_size)
+print("what")
 
-x = generation_manager.get_current_best()
+x = generation_manager.get_current_best() #reaches genome.h copy_arrays()
 print(x)
-#print("what")
 
 
 

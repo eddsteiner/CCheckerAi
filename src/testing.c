@@ -37,7 +37,7 @@ void test_hashtable() {
     printf("a\n");
 
     printf("contained: %d\n", hashtable_contains_int_vector(ht, ints));
-    printf("ints: %ld\n", (long)ints);
+    printf("ints: %ld ================================\n", (long)ints);
     hashtable_push_int_vector(ht, ints);
     printf("contained: %d\n", hashtable_contains_int_vector(ht, ints));
 }

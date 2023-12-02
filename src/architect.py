@@ -84,7 +84,7 @@ class Architect:
 
                 games += 1 #iterate game
 
-        if len(rankings) != len(set(rankings)):
+        if len(wins_array) != len(set(wins_array)):
             # Create a list of lists where the index represents the number of wins
             win_groups = [[] for _ in range(max(wins_array) + 1)] #if the max is 10 wins, there are 11 empty arrays in the array
             for i, wins in enumerate(wins_array): #i is index of element wins is the value of the element: Example [0,1,2,2,1,0] => [[0,5], [1,4] [2,3]]

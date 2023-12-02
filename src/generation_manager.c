@@ -49,10 +49,11 @@ typedef struct Bucket {
 
 // Topological sort for a potential genome, returns NULL if invalid genome
 static Vector* toposort(GenerationManager* self, Genome* genome) {
+    printf("here right????????\n");
     long* bufl = malloc(sizeof(long*)); //for all interfacing needs
     int* buf = malloc(sizeof(int*)); //for all interfacing needs
     int len = genome->node_count;
-    Vector* buckets = vector_new(sizeof(Bucket)); //contains a list of buckets, each having an "in" and many "outs", all ids of nodes
+    Vector* buckets = vector_new(sizeof(Bucket*)); //contains a list of buckets, each having an "in" and many "outs", all ids of nodes
     Vector* bucket_labels = vector_new(sizeof(int)); //helps to index buckets, contains the "in" for each bucket
     ConnectionGene* cur_connection;
 
@@ -86,6 +87,7 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
             new_buck->outs = vector_new(sizeof(int*));
             vector_push(new_buck->outs, &cur_connection->out); //push the connection
             *bufl = (long)new_buck;
+            printf("PUSHING BUCKET: %ld\n", *bufl);
             vector_push(buckets, bufl); //push the new bucket's address to the overall list of buckets
         }
     }
@@ -115,12 +117,18 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
             int cur_node = *(int*)vector_index(cur_layer, i); //the node id we're currently looking at
             *buf = cur_node;
             int index = vector_in(bucket_labels, buf); //grab the bucket for the current node if it exists (it should)
-            Bucket* cur_bucket = *(Bucket**)vector_index(buckets, index);
-            if (cur_bucket->in != cur_node) {
+            Bucket* cur_bucket = (Bucket*)vector_index(buckets, index);
+            Bucket* dumb_buckets = &((Bucket*)(buckets->elems))[index];
+            printf("oh boy start, from bucket: %ld\n", (long)cur_bucket);
+            printf("oh boy start, should be bucket: %ld\n", (long)dumb_buckets);
+            printf("oh boy start, stat: %d\n", buckets->elem_size);
+            printf("oh boy start, stat: %d\n", buckets->length);
+            if (cur_bucket->in != cur_node) { //we grabbed a connection that should take in this node but it doesn't
                 printf("BIGGGG ERRORRRRRRRR\n");
                 //TODO DEALLOCATE
                 return NULL;
             }
+            printf("oh boy\n");
             Vector* outs = cur_bucket->outs;
             for (int j = 0; j < outs->length; j++) { //append all the outs to the new layer (no output nodes should be in any bucket)
                 if (vector_in(new_layer, vector_index(outs, j)) == -1) { //if we haven't seen this out node before push it
@@ -143,6 +151,7 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
                 int* id = (int*)vector_index(layer_labels, i);
                 vector_push(&layers[index], id); //push the id to the layer vector
             }
+            printf("GOOD\n");
             return layers;
             
             //TODO DEALLOCATE
@@ -150,6 +159,7 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
 
         int contained = hashtable_contains_int_vector(hashtable, new_layer);
         if (contained == 1) { //we've already seen this vector before, genome is NOT ACYCLIC!!!
+            printf("genome is cyclic\n");
             //TODO DEALLOCATE
             return NULL;
         }
@@ -167,6 +177,7 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
     }
 
     // unsure how to get here
+    printf("how tf\n");
     return NULL;
 }
 
@@ -266,6 +277,8 @@ static int GenerationManager_init(GenerationManager *self, PyObject *args, PyObj
     self->generation_number = 0;
     self->initialized = 0;
     // need to create a fresh generation here, or keep a boolean that says you need to call a fresh generation or load one
+    printf("hereeeee===================\n");
+    fresh_generation(self);
     return 0;
 }
 

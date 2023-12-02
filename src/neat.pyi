@@ -4,10 +4,13 @@
 class GenerationManager:
     """Manages all functionality for a NEAT generation."""
 
-    POPULATION_SIZE: int
+    #POPULATION_SIZE: int
+    population_size: int
     """The size of a generation."""
     generation_number: int
     """The current generation's number."""
+
+    def __init__(self, input_count: int, output_count: int, population_size: int): """"""
 
     def get_current_best(self) -> Creature:
         """Returns the best Creature in the current generation."""
@@ -45,8 +48,8 @@ class GenerationManager:
 class Creature:
     """An individual Creature which can play Chinese Checkers."""
 
-    node_count: int
-    connection_count: int
+    #node_count: int
+    #connection_count: int
 
     def calculate(self, board: int, output_buf: int) -> None:
         """
@@ -57,8 +60,8 @@ class Creature:
         The output buffer should be of size x.
         """
 
-    def total_gene_count(self) -> int:
-        """a"""
+    #def total_gene_count(self) -> int:
+    #    """a"""
 
 
 

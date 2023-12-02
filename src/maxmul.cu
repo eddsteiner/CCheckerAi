@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <cuda.h>
+#include "genome.h"
  
 
 __global__ void vecmul(float *A, float* B, float *C, int size)

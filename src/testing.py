@@ -24,17 +24,19 @@ print(c)
 
 
 creature = neat.Creature()
-x = creature.connection_count
+#x = creature.connection_count
+#print(x)
+#print(creature.total_gene_count())
+
+
+generation_manager = neat.GenerationManager(10, 3, 500)
+if generation_manager == None:
+    print("Could not initialize generation manager!")
+print(generation_manager.population_size)
+print("what")
+
+x = generation_manager.get_current_best() #reaches genome.h copy_arrays()
 print(x)
-print(creature.total_gene_count())
-
-
-generation_manager = neat.GenerationManager()
-print(generation_manager.POPULATION_SIZE)
-
-x = generation_manager.get_current_best()
-print(x)
-#print("what")
 
 
 

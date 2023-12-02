@@ -4,6 +4,7 @@ import numpy.typing as npt
 from neat import Creature
 
 
+
 class Stats:
     """Contains stats about a Chinese Checkers game."""
     pass

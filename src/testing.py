@@ -1,6 +1,7 @@
 import numpy as np
 import ctypes
 
+print("hi")
 import neat
 
 
@@ -29,7 +30,7 @@ creature = neat.Creature()
 #print(creature.total_gene_count())
 
 
-generation_manager = neat.GenerationManager(10, 3, 500)
+generation_manager = neat.GenerationManager(10, 3, 3)
 if generation_manager == None:
     print("Could not initialize generation manager!")
 print(generation_manager.population_size)

@@ -6,4 +6,5 @@
 **/.err
 **/.out
 **/testing
+**/target
 

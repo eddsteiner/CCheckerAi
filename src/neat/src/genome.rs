@@ -69,9 +69,16 @@ impl Arrays {
         // populate the buckets with all the enabled connections (excluding output connections)
         let mut bucket_labels: HashSet<usize> = HashSet::new();
         let mut buckets: HashMap<usize, HashSet<usize>> = HashMap::new();
+        let mut cur_layer: HashSet<usize> = HashSet::new(); //for toposort
+        println!("Genome connections: {:?}", genome.connections.len());
         for i in 0..genome.connections.len() {
             let cur_connect = &genome.connections[i];
-            if cur_connect.enabled && !genome.output_ids.contains(&cur_connect.out_node) { //valid connection
+            //println!("Enabled and contained? {:?}, {:?}", cur_connect.enabled, genome.output_ids.contains(&cur_connect.out_node));
+            //if cur_connect.enabled && !genome.output_ids.contains(&cur_connect.out_node) { //valid connection
+            if cur_connect.enabled { //valid connection
+                if genome.input_ids.contains(&cur_connect.in_node) { //start building the first layer for the toposort
+                    cur_layer.insert(cur_connect.in_node);
+                }
 
                 // push to a bucket, create if necessary
                 if !bucket_labels.contains(&cur_connect.in_node) { //we don't yet have a bucket for this in_node, create one
@@ -84,7 +91,7 @@ impl Arrays {
 
         // now that we have the buckets, begin toposort
         let mut past_layers: HashMap<usize, Vec<(u32, HashSet<usize>)>> = HashMap::new(); //<hash, <(layer_number, <layer_ids>)>>
-        let mut cur_layer: HashSet<usize> = genome.input_ids.clone().into_iter().collect(); //all the input nodes first
+        past_layers.insert(292, vec![(0, genome.input_ids.clone())]); //push the input ids as layer 0
         let mut layer_number = 0; //will get stored with every layer
         while cur_layer.len() > 0 { //while a frontier still exists for the next layer
             layer_number += 1;
@@ -92,7 +99,8 @@ impl Arrays {
             // build the new layer
             let mut new_layer: HashSet<usize> = HashSet::new();
             for input in &cur_layer {
-                let extend_ids = buckets[&input].iter().filter(|x| genome.output_ids.contains(x)); //remove output ids
+                println!("input: {}", input);
+                let extend_ids = buckets[&input].iter().filter(|x| !genome.output_ids.contains(x)); //remove output ids
                 new_layer.extend(extend_ids); //because hash we don't have to worry about repeat output ids
             }
 

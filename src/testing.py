@@ -20,7 +20,7 @@ cpoint = c.ctypes.data
 
 print("here")
 
-neat.maxmul(apoint, bpoint, cpoint, 3)
+neat.cu_maxmul(apoint, bpoint, cpoint, 3)
 print(c)
 
 
@@ -30,7 +30,7 @@ creature = neat.Creature()
 #print(creature.total_gene_count())
 
 
-generation_manager = neat.GenerationManager(10, 3, 3)
+generation_manager = neat.GenerationManager(10, 81, 417)
 if generation_manager == None:
     print("Could not initialize generation manager!")
 print(generation_manager.population_size)

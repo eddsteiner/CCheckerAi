@@ -70,18 +70,13 @@ class Architect:
         print(wins_array)
         
         for creature in all_creatures:  #loops through all creatures to feed to game manager
-            #print("looping through creatures")
             games = 0
-            while games <= 99:  #playing 10 games per creature
+            while games <= 9:  #playing 10 games per creature
                 creature1 = creature
                 creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]  #randomizing creature 2
-                # print("creature 1: ", creature1)
-                # print("creature 2: ", creature2)
-
 
                 while creature2 == creature1:   #keeps looking for new creature if creature 1 and 2 are the same
                     creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]
-                
                 
                 result = self.testgamemanager()
                 #result = game.run_game(creature1, creature2)    #run the game with the creatures

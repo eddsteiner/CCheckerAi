@@ -1,6 +1,11 @@
 use pyo3::prelude::*;
 use std::slice;
 
+mod genome;
+mod creature;
+mod generation_manager;
+
+
 extern { fn maxmul(a: *const f32, b: *const f32, c: *mut f32, size: i32) -> (); }
 
 
@@ -45,3 +50,5 @@ fn maturin_testing(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(test_pointer, m)?)?;
     Ok(())
 }
+
+

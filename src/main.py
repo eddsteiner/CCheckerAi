@@ -2,6 +2,7 @@ import numpy as np
 import random
 
 from engine import ChineseCheckersEngine
+from architect import Architect
 
 
 #fail cases 79 + 1, 9 - 9 (gives 89 do to the opposite side), something wrong with corner (71, 79, 80) 
@@ -10,89 +11,99 @@ from engine import ChineseCheckersEngine
 
 def main():
     
-    game = ChineseCheckersEngine(None, None)
-    game.initialize_board()
+
+    test = Architect()
+    rankingsArray = test.evolve()
+    print(rankingsArray)
+
+
+
+
+
+    # game = ChineseCheckersEngine(None, None)
+    # game.initialize_board()
     # game.board1 = np.array(list(range(81)))
     # game.print_board()
+    #print("hello")
     #menu
-    PlayerChoice = input('Choose an option: 1. Play 2. Exit')
-    PlayerChoice = int(PlayerChoice)
-    moves = [-1, -9, 8, -8, 9, 1]
-    my_array = list(range(81))
-    random_startpos = random.choice(my_array)
-    random_action = random.choice(moves)
+    # PlayerChoice = input('Choose an option: 1. Play 2. Exit')
+    # PlayerChoice = int(PlayerChoice)
+    # moves = [-1, -9, 8, -8, 9, 1]
+    # my_array = list(range(81))
+    # random_startpos = random.choice(my_array)
+    # random_action = random.choice(moves)
     # game.switch_player()
 
 
 
 
-    while (PlayerChoice == 1):
-        #Player 1 turn
-        print('---------------------------')
-        print('---------------------------')
-        print('---------------------------')
-        print('PLAYER 1 TURN')
-        game.print_board()
-        p1_start_pos = input('Pick starting piece')
-        p1_start_pos = int(p1_start_pos)
-        p1_action = input('pick action')
-        p1_action = int(p1_action)
+#     while (PlayerChoice == 1):
+#         #Player 1 turn
+#         print('---------------------------')
+#         print('---------------------------')
+#         print('---------------------------')
+#         print('PLAYER 1 TURN')
+#         game.print_board()
+#         p1_start_pos = input('Pick starting piece')
+#         p1_start_pos = int(p1_start_pos)
+#         p1_action = input('pick action')
+#         p1_action = int(p1_action)
  
-        while not game.update_board(p1_start_pos, p1_action):
-            p1_start_pos = input('Pick new starting piece')
-            p1_start_pos = int(p1_start_pos)
-            p1_action = input('pick new action')
-            p1_action = int(p1_action)
+#         while not game.update_board(p1_start_pos, p1_action):
+#             p1_start_pos = input('Pick new starting piece')
+#             p1_start_pos = int(p1_start_pos)
+#             p1_action = input('pick new action')
+#             p1_action = int(p1_action)
 
-        #switch player
-        game.switch_player()
-        #player 2 turn
-        print('---------------------------')
-        print('---------------------------')
-        print('---------------------------')
-        print("PLAYER 2 TURN")
-        game.print_board()
-
-
-        #for user play---------------------------
-        p2_start_pos = input('Pick starting piece')
-        p2_start_pos = int(p2_start_pos)
-        p2_action = input('pick action')
-        p2_action = int(p2_action)
-        #------------------------------------------
+#         #switch player
+#         game.switch_player()
+#         #player 2 turn
+#         print('---------------------------')
+#         print('---------------------------')
+#         print('---------------------------')
+#         print("PLAYER 2 TURN")
+#         game.print_board()
 
 
-        #random number testing------------------------------------
-        # random_startpos = random.choice(my_array)
-        # random_action = random.choice(moves)
-        # print("new ", random_startpos, " ---- ", random_action)
-        #---------------------------------------------------------
+#         #for user play---------------------------
+#         p2_start_pos = input('Pick starting piece')
+#         p2_start_pos = int(p2_start_pos)
+#         p2_action = input('pick action')
+#         p2_action = int(p2_action)
+#         #------------------------------------------
 
 
-        while not game.update_board(p2_start_pos, p2_action):
-            #random number -------------------------------------------------------------------------
-            # print("!!!!! start = ", random_startpos, " !!!!!! action = ", random_action)
-            # print("picking a new start and action...")
-            # print("!!!!!!!!")
-            # random_startpos = random.choice(my_array)
-            # random_action = random.choice(moves)
-            # print("new ", random_startpos, " ---- ", random_action)
-            #---------------------------------------------------------------------------------
+#         #random number testing------------------------------------
+#         # random_startpos = random.choice(my_array)
+#         # random_action = random.choice(moves)
+#         # print("new ", random_startpos, " ---- ", random_action)
+#         #---------------------------------------------------------
 
 
-            #user-------------------------------------------------
-            p2_start_pos = input('Pick new starting piece')
-            p2_start_pos = int(p2_start_pos)
-            p2_action = input('pick new action')
-            p2_action = int(p2_action)
-            # #--------------------------------------------------
+#         while not game.update_board(p2_start_pos, p2_action):
+#             #random number -------------------------------------------------------------------------
+#             # print("!!!!! start = ", random_startpos, " !!!!!! action = ", random_action)
+#             # print("picking a new start and action...")
+#             # print("!!!!!!!!")
+#             # random_startpos = random.choice(my_array)
+#             # random_action = random.choice(moves)
+#             # print("new ", random_startpos, " ---- ", random_action)
+#             #---------------------------------------------------------------------------------
+
+
+#             #user-------------------------------------------------
+#             p2_start_pos = input('Pick new starting piece')
+#             p2_start_pos = int(p2_start_pos)
+#             p2_action = input('pick new action')
+#             p2_action = int(p2_action)
+#             # #--------------------------------------------------
 
 
 
-        #game.switch_player()
-        game.print_board()
-        PlayerChoice = input('keep Playing? 1. yes 2. no')
-        PlayerChoice = int(PlayerChoice)
+#         #game.switch_player()
+#         game.print_board()
+#         PlayerChoice = input('keep Playing? 1. yes 2. no')
+#         PlayerChoice = int(PlayerChoice)
         
 
 
@@ -102,11 +113,11 @@ def main():
 
 
 
-    #game.print_board()
+#     #game.print_board()
 
 
-    #game.board1 = np.array(list(range(81)))
-    #game.print_board()
+#     #game.board1 = np.array(list(range(81)))
+#     #game.print_board()
 
 
 if __name__ == "__main__":

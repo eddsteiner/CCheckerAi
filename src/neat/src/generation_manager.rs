@@ -7,7 +7,7 @@ use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, 
 #[pyclass]
 pub struct GenerationManager {
     generation_size: usize,
-    input_count: usize,
+    input_count: usize, //true input count (excluding bias)
     output_count: usize,
     population: Vec<BCreature>,
 }
@@ -36,11 +36,11 @@ impl GenerationManager {
         let mut rng = rand::thread_rng(); //for random things
 
         for _ in 0..self.generation_size { //for each creature
-            let mut genome = Genome::with_capacities(self.input_count + self.output_count, self.input_count * self.output_count);
+            let mut genome = Genome::with_capacities((self.input_count + 1) + self.output_count, (self.input_count + 1) * self.output_count + 1); //include bias
             
             // create input nodes
-            genome.input_ids = HashSet::with_capacity(self.input_count);
-            for j in 0..self.input_count {
+            genome.input_ids = HashSet::with_capacity(self.input_count+1);
+            for j in 0..self.input_count+1 {
                 genome.nodes.push(NodeGene { id: j, node_type: 0 });
                 genome.input_ids.insert(j);
                 
@@ -48,12 +48,12 @@ impl GenerationManager {
 
             // create output nodes and connections
             genome.output_ids = HashSet::with_capacity(self.output_count);
-            for j in self.input_count..self.input_count+self.output_count { //for every output node
+            for j in self.input_count..(self.input_count+1)+self.output_count { //for every output node
                 genome.nodes.push(NodeGene { id: j, node_type: 1});
                 genome.output_ids.insert(j);
 
                 // attach this output node to each input node
-                for k in 0..self.input_count { //for every input node
+                for k in 0..(self.input_count+1) { //for every input node
                     genome.connections.push(ConnectionGene { //create connection between input and output node
                         in_node: k,
                         out_node: j,

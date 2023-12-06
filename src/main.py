@@ -1,8 +1,10 @@
+from multiprocessing import Array
 import numpy as np
 import random
 
 from engine import ChineseCheckersEngine
 from architect import Architect
+from game_manager import GameManager
 
 
 #fail cases 79 + 1, 9 - 9 (gives 89 do to the opposite side), something wrong with corner (71, 79, 80) 
@@ -11,10 +13,13 @@ from architect import Architect
 
 def main():
     
+    manager = GameManager()
+    array = manager.get_move_map()
+    print(array)
 
-    test = Architect()
-    rankingsArray = test.evolve()
-    print(rankingsArray)
+    # test = Architect()
+    # rankingsArray = test.evolve()
+    # print(rankingsArray)
 
 
 

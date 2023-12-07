@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use pyo3::prelude::*;
+use pyo3::{prelude::*, types::PyList};
 use rand::Rng;
 use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, Genome, Arrays}};
 
@@ -29,6 +29,18 @@ impl GenerationManager {
         };
         gen_man.fresh_generation();
         gen_man
+    }
+
+    pub fn get_current_generation<'a>(&'a self, py: Python<'a>) -> PyResult<&PyList> {
+        let list: &PyList = PyList::new(py, [0; 0]);
+
+        // convert each BCreature into a Python Creature
+        for i in 0..self.population_size {
+            let arrs = self.population[i].arrays.clone();
+            list.append(Creature::from(arrs, self.input_count).into_py(py))?; //convert arrs into a Creature then into a Python object
+        }
+
+        Ok(list)
     }
 }
 impl GenerationManager {

@@ -57,6 +57,22 @@ extern "C" {
         cudaFree(gpu_C);
     }
 
+    void calculate(float* mult, size_t* source, size_t* dest, float* output, size_t* mult_threads, size_t* output_threads) {
+
+    }
+
+    /*
+        mult: *const f32,
+        source: *const usize,
+        dest: *const usize,
+        output: *mut f32,
+        mult_threads: *const usize,
+        output_threads: *const usize,
+
+   */
+
+
+
 }
 
 

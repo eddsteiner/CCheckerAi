@@ -120,11 +120,7 @@ impl Arrays {
             }
         }
 
-        //println!("mult_threads: {:?}", arrs.mult_threads);
-        //println!("output_threads: {:?}", arrs.output_threads);
-        //println!("dest: {:?}", arrs.dest);
-
-        //todo!();
+        arrs.output[0] = 1.0; //set the bias input
         arrs
     }
 

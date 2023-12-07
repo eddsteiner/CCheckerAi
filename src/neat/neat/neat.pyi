@@ -9,8 +9,8 @@ class GenerationManager:
 
     def __init__(self, input_count: int, output_count: int, population_size: int): """"""
 
-    def get_current_best(self) -> Creature:
-        """Returns the best Creature in the current generation."""
+    #def get_current_best(self) -> Creature:
+    #    """Returns the best Creature in the current generation."""
 
     def get_current_generation(self) -> list[Creature]:
         """Returns all Creatures in this generation."""

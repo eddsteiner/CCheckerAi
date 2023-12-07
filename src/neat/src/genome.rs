@@ -93,6 +93,9 @@ impl Arrays {
             output_threads: vec![0, topo.layers.len()],
         };
 
+        let mut new_map: HashMap<usize, usize> = HashMap::new();
+
+        // load values into the arrays
         let mut arrs_offset = 0;
         for i in 0..topo.layers.len() {
             let layer = &topo.layers[i];
@@ -104,11 +107,13 @@ impl Arrays {
             }
             arrs_offset += connections.len();
 
-            //arrs.mult_threads[i] = connections.len(); TODO THESE TWO, TRY TO READ MY INSTRUCTIONS AGAIN SO I KNOW WTF TO DO HERE
-            //arrs.output_threads[i] = connections.len();
+            arrs.mult_threads[i] = connections.len();
+            if i == topo.layers.len()-1 { //on the last layer, set to the number of outputs
+                arrs.output_threads[i] = genome.output_ids.len();
+            } else {
+                arrs.output_threads[i] = topo.layers[i+1].len(); //NOTE output IS SORTED BY ID, NOT BY THIS THING, SO CHANGED ORDERING
+            }
         }
-
-
 
         println!("{:?}", arrs);
         todo!();

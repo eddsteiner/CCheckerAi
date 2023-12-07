@@ -3,6 +3,6 @@ source "${HOME}""/venvs""/neat/bin/activate"
 cd neat
 ./build.sh
 cd ../
-python3 testing.py
+python3 neat_testing.py
 
 

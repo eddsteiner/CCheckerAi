@@ -6,7 +6,8 @@ use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, 
 
 #[pyclass]
 pub struct GenerationManager {
-    generation_size: usize,
+    #[pyo3(get)]
+    population_size: usize,
     input_count: usize, //true input count (excluding bias)
     output_count: usize,
     population: Vec<BCreature>,
@@ -14,12 +15,12 @@ pub struct GenerationManager {
 #[pymethods]
 impl GenerationManager {
     #[new]
-    pub fn new(generation_size: i64, input_count: i64, output_count: i64) -> Self {
+    pub fn new(population_size: i64, input_count: i64, output_count: i64) -> Self {
         //let generation_size = generation_size as u32;
         //let input_count = input_count as u32;
         //let output_count = output_count as u32;
         let mut gen_man = GenerationManager {
-            generation_size: generation_size as usize,
+            population_size: population_size as usize,
             input_count: input_count as usize,
             output_count: output_count as usize,
             //input_ids: (0..input_count).collect(),
@@ -32,10 +33,10 @@ impl GenerationManager {
 }
 impl GenerationManager {
     fn fresh_generation(&mut self) {
-        self.population = Vec::with_capacity(self.generation_size);
+        self.population = Vec::with_capacity(self.population_size);
         let mut rng = rand::thread_rng(); //for random things
 
-        for _ in 0..self.generation_size { //for each creature
+        for _ in 0..self.population_size { //for each creature
             let mut genome = Genome::with_capacities((self.input_count + 1) + self.output_count, (self.input_count + 1) * self.output_count + 1); //include bias
             
             // create input nodes
@@ -61,7 +62,6 @@ impl GenerationManager {
                         enabled: rng.gen_bool(0.5), //randomized enabledness
                         innov: k,
                     });
-
                 }
             }
 

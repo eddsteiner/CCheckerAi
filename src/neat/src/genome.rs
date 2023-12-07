@@ -43,7 +43,7 @@ pub struct TopoStruct<'a> {
     pub layers: Vec<Vec<usize>>, //toposorted layers
     //nodes: Vec<&'a NodeGene>, //only enabled nodes
     pub connections: Vec<&'a ConnectionGene>, //only enabled connections
-    pub connections_map: HashMap<usize, Vec<&'a ConnectionGene>>,
+    pub connections_map: HashMap<usize, Vec<&'a ConnectionGene>>, //maps an to its output connections
 }
 
 
@@ -57,16 +57,16 @@ pub struct Arrays {
     pub output_threads: Vec<usize>,
 }
 impl Arrays {
-    pub fn with_capacities(mult: usize, src: usize, dest: usize, output: usize, mult_th: usize, output_th: usize) -> Self {
-        Arrays {
-            multiplier: Vec::with_capacity(mult),
-            source: Vec::with_capacity(src),
-            dest: Vec::with_capacity(dest),
-            output: Vec::with_capacity(output),
-            mult_threads: Vec::with_capacity(mult_th),
-            output_threads: Vec::with_capacity(output_th)
-        }
-    }
+    //pub fn with_capacities(mult: usize, src: usize, dest: usize, output: usize, mult_th: usize, output_th: usize) -> Self {
+    //    Arrays {
+    //        multiplier: Vec::with_capacity(mult),
+    //        source: Vec::with_capacity(src),
+    //        dest: Vec::with_capacity(dest),
+    //        output: Vec::with_capacity(output),
+    //        mult_threads: Vec::with_capacity(mult_th),
+    //        output_threads: Vec::with_capacity(output_th)
+    //    }
+    //}
 
     pub fn from_genome(genome: &Genome) -> Option<Self> {
         Some(Arrays::from_topo(genome, Arrays::toposort(genome)?)) //first run topo, then convert topo to Arrays
@@ -74,26 +74,31 @@ impl Arrays {
 
 
     pub fn from_topo(genome: &Genome, topo: TopoStruct) -> Self {
-        //let connections_active: Vec<ConnectionGene> = genome.connections.clone().into_iter().filter(|x| x.enabled).collect();
-        //let len = topo.iter().flatten().count();
-        //let mut arrs = Arrays::with_capacities(
-        //    topo.connections.len(),
-        //    topo.connections.len(),
-        //    topo.connections.len(),
-        //    genome.nodes.len(),
-        //    topo.layers.len(),
-        //    topo.layers.len(),
-        //);
         let mut arrs = Arrays {
             multiplier: vec![0.0; topo.connections.len()],
             source: vec![0; topo.connections.len()],
             dest: vec![0; topo.connections.len()],
             output: vec![0.0; genome.nodes.len()],
-            mult_threads: vec![0, topo.layers.len()],
-            output_threads: vec![0, topo.layers.len()],
+            mult_threads: vec![0; topo.layers.len()],
+            output_threads: vec![0; topo.layers.len()],
         };
 
-        let mut new_map: HashMap<usize, usize> = HashMap::new();
+        // reorder ids to simplify later processes
+        let mut new_map: HashMap<usize, (usize, Vec<&ConnectionGene>)> = HashMap::new(); //maps an id to a new id and output connections
+        let mut new_topo = topo.layers.clone();
+        new_topo.push(genome.output_ids.iter().map(|x| *x).collect());
+        let topo_nums: Vec<(usize, usize)> = new_topo.into_iter().flatten().enumerate().collect(); //new, old
+        for (i, e) in topo_nums {
+            match topo.connections_map.get(&e) {
+                None => {
+                    new_map.insert(e, (i, Vec::new()));
+                },
+                Some(connections) => {
+                    new_map.insert(e, (i, connections.clone()));
+                },
+
+            }
+        }
 
         // load values into the arrays
         let mut arrs_offset = 0;
@@ -102,8 +107,8 @@ impl Arrays {
             let connections: Vec<&ConnectionGene> = layer.iter().map(|x| topo.connections_map[x].clone()).flatten().collect(); //ids to connections
             for j in 0..connections.len() { //push data to multiplier, source, and dest
                 arrs.multiplier[arrs_offset + j] = connections[j].weight;
-                arrs.source[arrs_offset + j] = connections[j].in_node;
-                arrs.dest[arrs_offset + j] = connections[j].out_node;
+                arrs.source[arrs_offset + j] = new_map[&connections[j].in_node].0;
+                arrs.dest[arrs_offset + j] = new_map[&connections[j].out_node].0;
             }
             arrs_offset += connections.len();
 
@@ -111,12 +116,15 @@ impl Arrays {
             if i == topo.layers.len()-1 { //on the last layer, set to the number of outputs
                 arrs.output_threads[i] = genome.output_ids.len();
             } else {
-                arrs.output_threads[i] = topo.layers[i+1].len(); //NOTE output IS SORTED BY ID, NOT BY THIS THING, SO CHANGED ORDERING
+                arrs.output_threads[i] = topo.layers[i+1].len();
             }
         }
 
-        println!("{:?}", arrs);
-        todo!();
+        //println!("mult_threads: {:?}", arrs.mult_threads);
+        //println!("output_threads: {:?}", arrs.output_threads);
+        //println!("dest: {:?}", arrs.dest);
+
+        //todo!();
         arrs
     }
 

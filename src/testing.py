@@ -24,7 +24,7 @@ neat.cu_maxmul(apoint, bpoint, cpoint, 3)
 print(c)
 
 
-creature = neat.Creature()
+#creature = neat.Creature()
 #x = creature.connection_count
 #print(x)
 #print(creature.total_gene_count())
@@ -36,7 +36,7 @@ if generation_manager == None:
 print(generation_manager.population_size)
 print("what")
 
-x = generation_manager.get_current_best() #reaches genome.h copy_arrays()
+x = generation_manager.get_current_generation()
 print(x)
 
 

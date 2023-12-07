@@ -10,14 +10,14 @@ pub struct BCreature {
 
 #[pyclass]
 pub struct Creature {
-
+    pub arrays: Arrays,
 }
 #[pymethods]
 impl Creature {
-    #[new]
-    fn new() -> Self {
-        Creature {}
-    }
+    //#[new]
+    //fn new() -> Self {
+    //    Creature {}
+    //}
 }
 
 

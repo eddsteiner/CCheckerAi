@@ -60,8 +60,11 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
     // first push all the input nodes to the buckets
     for (int i = 0; i < self->input_count; i++) {
         Bucket* new_buck = malloc(sizeof(Bucket));
-        new_buck->in = genome->nodes->id;
-        new_buck->outs = vector_new(sizeof(int));
+        new_buck->in = *(int*)vector_index(self->input_node_ids, i); //set the bucket id to the ith input node's id
+        new_buck->outs = vector_new(sizeof(int)); //initialize empty vector
+        *bufl = (long)new_buck;
+        vector_push(buckets, bufl);
+        vector_push(bucket_labels, &new_buck->in);
     }
 
     // then push all the connections (excluding output nodes)
@@ -78,8 +81,8 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
         *buf = cur_connection->in;
         int index = vector_in(bucket_labels, buf); //see if we already have this bucket
         if (index > -1) { //we've already got this node in the buckets, so grab it and append this node
-            Bucket* cur_buck = vector_index(buckets, index);
-            vector_push(cur_buck->outs, &cur_connection->out); //push the id of this connection's out node
+            Bucket** cur_buck = vector_index(buckets, index);
+            vector_push((*cur_buck)->outs, &cur_connection->out); //push the id of this connection's out node
         } else { //we don't have this node yet, push it and append this node
             vector_push(bucket_labels, &cur_connection->in); //push the name of the new in to buckets
             Bucket* new_buck = malloc(sizeof(Bucket));
@@ -87,7 +90,7 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
             new_buck->outs = vector_new(sizeof(int*));
             vector_push(new_buck->outs, &cur_connection->out); //push the connection
             *bufl = (long)new_buck;
-            printf("PUSHING BUCKET: %ld\n", *bufl);
+            printf("PUSHING BUCKET: %ld\n", (long)new_buck);
             vector_push(buckets, bufl); //push the new bucket's address to the overall list of buckets
         }
     }
@@ -117,12 +120,19 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
             int cur_node = *(int*)vector_index(cur_layer, i); //the node id we're currently looking at
             *buf = cur_node;
             int index = vector_in(bucket_labels, buf); //grab the bucket for the current node if it exists (it should)
-            Bucket* cur_bucket = (Bucket*)vector_index(buckets, index);
-            Bucket* dumb_buckets = &((Bucket*)(buckets->elems))[index];
-            printf("oh boy start, from bucket: %ld\n", (long)cur_bucket);
-            printf("oh boy start, should be bucket: %ld\n", (long)dumb_buckets);
-            printf("oh boy start, stat: %d\n", buckets->elem_size);
-            printf("oh boy start, stat: %d\n", buckets->length);
+            Bucket* cur_bucket = *(Bucket**)vector_index(buckets, index);
+            //Bucket* another_bucket = *(Bucket**)cur_bucket;
+            //Bucket* third_bucket = *(Bucket**)vector_index(buckets, index);
+            //Bucket* dumb_buckets = &((Bucket*)(buckets->elems))[index];
+            //printf("oh boy start, actually good but doing it wrong: %ld\n", *(long*)dumb_buckets);
+            printf("oh boy start, should be bucket: %ld\n", (long)cur_bucket);
+            //printf("oh boy start, should be bucket: %ld\n", (long)another_bucket);
+            //printf("oh boy start, should be bucket: %ld\n", (long)third_bucket);
+            //printf("oh boy start, should be bucket: %d\n", third_bucket->in);
+            //printf("oh boy start, should be bucket: %d\n", third_bucket->in);
+            //printf("oh boy start, stat: %d\n", buckets->elem_size);
+            //printf("oh boy start, stat: %d\n", buckets->length);
+            printf("pre\n");
             if (cur_bucket->in != cur_node) { //we grabbed a connection that should take in this node but it doesn't
                 printf("BIGGGG ERRORRRRRRRR\n");
                 //TODO DEALLOCATE
@@ -136,6 +146,7 @@ static Vector* toposort(GenerationManager* self, Genome* genome) {
                 }
             }
         }
+        printf("boooom\n");
 
         // all the nodes of the next layer have been pushed to new_layer
         // check whether this layer is unique or empty (output nodes shouldn't be part of the problem)

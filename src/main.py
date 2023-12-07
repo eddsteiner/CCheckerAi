@@ -16,7 +16,8 @@ def main():
     manager = GameManager()
     array = manager.get_move_map()
     print(array)
-
+    length = len(array)
+    print("array length: ", length)
     # test = Architect()
     # rankingsArray = test.evolve()
     # print(rankingsArray)

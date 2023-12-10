@@ -1,5 +1,7 @@
 from distutils.util import split_quoted
 from threading import active_count
+from tracemalloc import start
+from distro import major_version
 import numpy as np
 import numpy.typing as npt
 from typing import Any
@@ -17,6 +19,8 @@ class ChineseCheckersEngine:
         self.moves = [-1, -9, 8, -8, 9, 1]
         self.jumps = [-2, -18, 16, -16, 18, 2]
         self.current_player = True  # Start with Player 1
+        self.jump_move_mem = set()
+        self.lock = -1
         self.player1 = player1
         self.player2 = player2
         self.initialize_board()
@@ -71,6 +75,8 @@ class ChineseCheckersEngine:
         """Returns: True = valid move, False = invalid move."""
         # Implement the rules to check if a move is valid
         
+        
+                
 
         if action not in self.moves: #first checks if the action value is even in the list of valid move values
             print('YO PICK A VALID MOVE FROM THE MOVE ARRAY')
@@ -350,22 +356,79 @@ class ChineseCheckersEngine:
     def make_move(self, start_pos: int, action: int, player: bool) -> bool:
         """Returns: True = made move, False = invalid move."""
         #check for valid piece picked
-        if(player):
-            if self.board1[start_pos] != 1:     #check if player 1 picked player 1 piece
-                print('CMON MAN PICK A PIECE THAT IS YOURS. YOUR PIECE SAYS 1')
-                is_valid = False                #if no then piece move is not valid
-            else:
-                is_valid = self.is_valid_move(self.board1, start_pos, action)    #else check if the action is valid
+        board = self.board1 if self.player else self.board2
 
+        
+        if start_pos != -1 and board[start_pos] != 1:     #check if player 1 picked player 1 piece
+            print('CMON MAN PICK A PIECE THAT IS YOURS. YOUR PIECE SAYS 1')
+            
+            return -1               #if no then piece move is not valid
         else:
-            if self.board2[start_pos] != 1:     #do the same for player 2
-                print('CMON MAN PICK A PIECE THAT IS YOURS. YOUR PIECE SAYS 1')
-                is_valid = False
-            else:
-                is_valid = self.is_valid_move(self.board2, start_pos, action)
+            if start_pos == -1 and self.lock > -1: #check if it is a valid skip move
+                self.switch_player()
+                self.jump_move_mem.clear()
+                self.lock = -1
+                return 0
+            
+            if start_pos == -1 and self.lock == -1:
+                return -1
+            
+            if not self.is_valid_move(board, start_pos, action):  #else check if the action is valid
+                return -1
+            
+
+            if self.lock > -1:    #there is a lock
                 
-        return is_valid
-    
+                if start_pos != self.lock:
+                    return -1
+                
+                if board[start_pos + action] != 0 and board[start_pos + action*2] == 0:
+
+                    
+                    if self.check_jumps(start_pos + action*2):
+                        self.update_board(start_pos, action)
+                        #remember all space currently on
+                        self.jump_moves_mem.add(start_pos+action*2)
+                        #self.jump_moves_mem.add(start_pos)
+                        self.lock = start_pos + action*2
+                        return 1
+                    else:
+                        self.switch_player()
+                        self.jump_move_mem.clear()
+                        self.lock = -1
+                        return 0
+                    
+                    
+            if board[start_pos + action ] == 0: #check for a simple slide
+                self.update_board(start_pos, action)
+                self.switch_player()
+                return 0
+            else:       #if action is not a slide
+                
+                #update board
+                #check for further jump
+                #if no further jump return 0
+                if self.check_jumps(start_pos + action*2):
+                    self.update_board(start_pos, action)
+                    #remember all space currently on
+                    self.jump_moves_mem.add(start_pos+action*2)
+                    self.jump_moves_mem.add(start_pos)
+                    self.lock = start_pos + action*2
+                    return 1
+                else:
+                    self.switch_player()
+                    self.jump_move_mem.clear()
+                    self.lock = -1
+                    return 0
+
+                return 1 #return 1       
+                        
+                
+                    
+                    
+            
+
+        
 
 #------------------------------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------------------------------
@@ -421,17 +484,11 @@ class ChineseCheckersEngine:
 #UPDATE BOARD
 
     def update_board(self, start_pos: int, action:int)->bool:
-        if not self.make_move(start_pos, action, self.current_player):
-            print("move is not valid! Did not make move")
-            return False
-        else:
-            print("make_move returned true for some reason!!!")
-            # if self.current_player:
-            #     self.board1[start_pos + action] = 1
-            #     self.board1[start_pos] = 0
-            #     self.board2[(80-start_pos) + ((-1)*action)] = 2
-            #     self.board2[start_pos] = 0
-            #     return True
+        # if not self.make_move(start_pos, action, self.current_player):
+        #     print("move is not valid! Did not make move")
+        #     return False
+        # else:
+        #     print("make_move returned true for some reason!!!")
             if self.current_player:
                 main_board = self.board1
                 second_board = self.board2
@@ -449,37 +506,36 @@ class ChineseCheckersEngine:
                 main_board[start_pos] = 0
                 second_board[(80-start_pos) + ((-1)*action)] = 2
                 second_board[(80 - start_pos)] = 0
-            # print(self.keep_jumping(start_pos, action))
+            
             return True
 
 
-    def keep_jumping(self, start_pos: int, action: int):
-        available_jumps = []
-        new_spot = start_pos + action
+   
+    
+    def check_jumps(self, start_pos, board)->bool:
+        possible_jumps = np.empty()
+        for action in self.moves:       #goes through all moves at current spot spot
+            if self.current_player: #PLAYER 1
+                if board[start_pos + action] != 0 and board[start_pos + (action*2)] == 0 and start_pos + (action*2) not in self.jump_move_mem: #checks the spot jumping over creatur                         
+                    np.append(possible_jumps, action, axis = 0 ) #adds move tuple to a list
+           
 
-        if self.current_player:
-            for moves in self.moves:
-                print("new spot", new_spot)
-                print("move: ", moves)
-                # Check if the move is valid
-                if self.make_move(new_spot, moves, self.current_player):
-                    print("move valid")
-                    # Check if the jump space is empty
-                    jump_spot = new_spot + (2 * moves)
-                    print(jump_spot)
-                    if jump_spot != start_pos - action:
-                        if self.board1[jump_spot] != 1:
-                            available_jumps.append(jump_spot)
-        # else:
-        #     for moves in self.moves:
-        #         # Check if the move is valid
-        #         if self.is_valid_move(self.board1, new_spot, moves):
-        #             # Check if the jump space is empty
-        #             jump_spot = new_spot + (2 * moves)
-        #             if self.board2[jump_spot] == 0:
-        #                 available_jumps.append(jump_spot)
+        
 
-        return available_jumps
+            
 
+        if len(possible_jumps) > 0:
+            # if len(possible_jumps) == 1: #if there is only 1 element
+            #     self.update_board(possible_jumps[0][0], possible_jumps[0][1]) #make the move on the board using the start_pos and the action
+            #     start_pos += possible_jumps[0][1]   #new starting position == the old pos + new action
+            #     self.check_jumps(start_pos) #recursively go again
+            print("jumps are possible")
+            return True   #returns jump options
+        else:
+            print("no jump possible")
+            return False     #or returns nothing
+
+                    
+    
                     
                 

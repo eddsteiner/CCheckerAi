@@ -23,12 +23,14 @@ __global__ void vecmul(float *A, float* B, float *C, int size)
 }
 
 
+// Runs one connection, taking a value from a source node, multiplying it, and adding it to a destination node
 __global__ void connection(float* mult, uint32_t* source, uint32_t* dest, float* output, uint32_t offset) {
     int id = threadIdx.x;
     atomicAdd(&output[dest[offset + id]], mult[offset + id] * output[source[offset + id]]);
 }
 
 
+// Normalizes a node's value so it can be used as a source node
 __global__ void normalize(float* output, uint32_t offset) {
     int id = threadIdx.x;
     output[offset + id] = tanh(output[offset + id]);
@@ -73,6 +75,7 @@ extern "C" {
     }
 
 
+    // Calculates the output of the given neural network arrays
     void calculate(
         float* mult,
         uint32_t* source,

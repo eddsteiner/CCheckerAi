@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use pyo3::{prelude::*, types::PyList};
 use rand::Rng;
-use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, Genome, Arrays}};
+use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, Genome, Arrays}, reproduction::ReproductionHelper};
 
 #[pyclass]
 pub struct GenerationManager {
@@ -11,6 +11,7 @@ pub struct GenerationManager {
     input_count: usize, //true input count (excluding bias)
     output_count: usize,
     population: Vec<BCreature>,
+    reproduction_helper: ReproductionHelper,
 }
 #[pymethods]
 impl GenerationManager {
@@ -26,6 +27,7 @@ impl GenerationManager {
             //input_ids: (0..input_count).collect(),
             //output_ids: (input_count..input_count+output_count).collect(),
             population: Vec::new(),
+            reproduction_helper: ReproductionHelper::new(0, 0),
         };
         gen_man.fresh_generation();
         gen_man
@@ -61,21 +63,26 @@ impl GenerationManager {
 
             // create output nodes and connections
             genome.output_ids = HashSet::with_capacity(self.output_count);
-            for j in self.input_count..(self.input_count+1)+self.output_count { //for every output node
-                genome.nodes.push(NodeGene { id: j, node_type: 1});
-                genome.output_ids.insert(j);
+            //for j in (self.input_count+1)..(self.input_count+1)+self.output_count { //for every output node
+            for j in 0..self.output_count { //for every output node
+                let output_id = j + self.input_count + 1; //need to offset by the number of input ids
+                genome.nodes.push(NodeGene { id: output_id, node_type: 1});
+                genome.output_ids.insert(output_id);
 
                 // attach this output node to each input node
                 for k in 0..(self.input_count+1) { //for every input node
                     genome.connections.push(ConnectionGene { //create connection between input and output node
                         in_node: k,
-                        out_node: j,
+                        out_node: output_id,
                         weight: rng.gen_range(-5.0..5.0), //randomized weight
                         enabled: rng.gen_bool(0.5), //randomized enabledness
-                        innov: k,
+                        innov: k + j * (self.input_count+1), //each connection has a unique id
                     });
                 }
             }
+
+            self.reproduction_helper.innov = (self.input_count+1) * self.output_count; //number of connections
+            self.reproduction_helper.id = (self.input_count+1) + self.output_count; //number of nodes
 
             // NOTE: we can unwrap here because we know it will always be valid, it does not have cycles
             let arrays = Arrays::from_genome(&genome).unwrap(); //convert the newly created genome into an Arrays struct

@@ -5,6 +5,7 @@ use crate::genome::{Genome, Arrays};
 
 
 extern {
+    /// Calculates the output of the given neural network arrays, on CUDA
     fn calculate(
         mult: *const f32,
         source: *const u32,
@@ -34,9 +35,10 @@ pub struct Creature {
 #[pymethods]
 impl Creature {
 
-    pub fn calculate(&mut self, pointer: usize) -> PyResult<usize> {
+    /// Accepts a pointer to a board and returns the calculated confidences for each move
+    pub fn calculate(&mut self, board_pointer: usize) -> PyResult<usize> {
         // first we need to copy the values to our output vector
-        let board = unsafe { slice::from_raw_parts_mut(pointer as *mut i32, self.input_size) };
+        let board = unsafe { slice::from_raw_parts_mut(board_pointer as *mut i32, self.input_size) };
         for i in 0..self.input_size {
             self.arrays.output[i+1] = board[i] as f32;
         }
@@ -67,11 +69,12 @@ impl Creature {
         Creature { arrays, input_size }
     }
 }
-//impl ToPyObject for Creature {
-//    fn to_object(&self, py: Python<'_>) -> PyObject {
-//        //self.to_object(py)
-//    }
-//}
+
+
+/// Creates a child genome from two parent genomes
+pub fn reproduce() {
+
+}
 
 
 

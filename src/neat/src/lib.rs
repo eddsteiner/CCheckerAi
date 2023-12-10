@@ -4,6 +4,7 @@ use std::slice;
 mod genome;
 mod creature;
 mod generation_manager;
+mod reproduction;
 
 use creature::Creature;
 use generation_manager::GenerationManager;

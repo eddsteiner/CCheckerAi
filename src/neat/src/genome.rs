@@ -1,7 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
 
-
 #[derive(Clone, Debug)]
 pub struct NodeGene {
     pub id: usize,
@@ -41,7 +40,6 @@ impl Genome {
 #[derive(Clone, Debug)]
 pub struct TopoStruct<'a> {
     pub layers: Vec<Vec<usize>>, //toposorted layers
-    //nodes: Vec<&'a NodeGene>, //only enabled nodes
     pub connections: Vec<&'a ConnectionGene>, //only enabled connections
     pub connections_map: HashMap<usize, Vec<&'a ConnectionGene>>, //maps an to its output connections
 }
@@ -57,22 +55,13 @@ pub struct Arrays {
     pub output_threads: Vec<u32>,
 }
 impl Arrays {
-    //pub fn with_capacities(mult: usize, src: usize, dest: usize, output: usize, mult_th: usize, output_th: usize) -> Self {
-    //    Arrays {
-    //        multiplier: Vec::with_capacity(mult),
-    //        source: Vec::with_capacity(src),
-    //        dest: Vec::with_capacity(dest),
-    //        output: Vec::with_capacity(output),
-    //        mult_threads: Vec::with_capacity(mult_th),
-    //        output_threads: Vec::with_capacity(output_th)
-    //    }
-    //}
-
+    /// Creates a set of arrays from a genome
     pub fn from_genome(genome: &Genome) -> Option<Self> {
         Some(Arrays::from_topo(genome, Arrays::toposort(genome)?)) //first run topo, then convert topo to Arrays
     }
 
 
+    /// Creates a set of arrays after a topological sort
     pub fn from_topo(genome: &Genome, topo: TopoStruct) -> Self {
         let mut arrs = Arrays {
             multiplier: vec![0.0; topo.connections.len()],
@@ -124,10 +113,9 @@ impl Arrays {
         arrs
     }
 
-    /// Turns a genome into layers, or None if genome encodes for a cyclic neural net
-    pub fn toposort(genome: &Genome) -> Option<TopoStruct> {
-        
-        // populate the buckets with all the enabled connections (excluding output connections)
+
+    /// Turns a genome into buckets, or None if idk, complicated return so just look at the variable names
+    pub fn to_buckets(genome: &Genome) -> Option<(HashSet<usize>, HashMap<usize, HashSet<usize>>, HashMap<usize, Vec<&ConnectionGene>>, Vec<&ConnectionGene>, HashSet<usize>)> {
         let mut bucket_labels: HashSet<usize> = HashSet::new();
         let mut buckets: HashMap<usize, HashSet<usize>> = HashMap::new();
         let mut buckets_genes: HashMap<usize, Vec<&ConnectionGene>> = HashMap::new(); //for arrays conversion
@@ -152,6 +140,41 @@ impl Arrays {
                 buckets_genes.get_mut(&cur_connect.in_node)?.push(&cur_connect); //push the connection to the bucket for in_node
             } 
         }
+
+        return Some((bucket_labels, buckets, buckets_genes, active_connections, cur_layer));
+    }
+
+
+    /// Turns a genome into layers, or None if genome encodes for a cyclic neural net
+    fn toposort(genome: &Genome) -> Option<TopoStruct> {
+        
+        //// populate the buckets with all the enabled connections (excluding output connections)
+        //let mut bucket_labels: HashSet<usize> = HashSet::new();
+        //let mut buckets: HashMap<usize, HashSet<usize>> = HashMap::new();
+        //let mut buckets_genes: HashMap<usize, Vec<&ConnectionGene>> = HashMap::new(); //for arrays conversion
+        //let mut active_connections: Vec<&ConnectionGene> = Vec::new(); //for arrays conversion
+        ////let mut active_nodes: Vec<&NodeGene> = Vec::new(); //for arrays conversion
+        //let mut cur_layer: HashSet<usize> = HashSet::new(); //for toposort
+        //for i in 0..genome.connections.len() {
+        //    let cur_connect = &genome.connections[i];
+        //    if cur_connect.enabled { //valid connection
+        //        active_connections.push(cur_connect);
+        //        if genome.input_ids.contains(&cur_connect.in_node) { //start building the first layer for the toposort
+        //            cur_layer.insert(cur_connect.in_node);
+        //        }
+
+        //        // push to a bucket, create if necessary
+        //        if !bucket_labels.contains(&cur_connect.in_node) { //we don't yet have a bucket for this in_node, create one
+        //            bucket_labels.insert(cur_connect.in_node);
+        //            buckets.insert(cur_connect.in_node, HashSet::new());
+        //            buckets_genes.insert(cur_connect.in_node, Vec::new());
+        //        }
+        //        buckets.get_mut(&cur_connect.in_node)?.insert(cur_connect.out_node); //push the out_node to the bucket for in_node
+        //        buckets_genes.get_mut(&cur_connect.in_node)?.push(&cur_connect); //push the connection to the bucket for in_node
+        //    } 
+        //}
+
+        let (bucket_labels, buckets, buckets_genes, active_connections, mut cur_layer) = Arrays::to_buckets(genome)?;
 
         // now that we have the buckets, begin toposort
         let mut past_layers: HashMap<usize, Vec<(u32, HashSet<usize>)>> = HashMap::new(); //<hash, <(layer_number, <layer_ids>)>>
@@ -197,10 +220,6 @@ impl Arrays {
         Some(topo)
     }
 }
-
-
-
-
 
 
 

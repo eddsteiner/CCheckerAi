@@ -50,11 +50,11 @@ pub struct TopoStruct<'a> {
 #[derive(Clone, Debug)]
 pub struct Arrays {
     pub multiplier: Vec<f32>,
-    pub source: Vec<usize>,
-    pub dest: Vec<usize>,
+    pub source: Vec<u32>,
+    pub dest: Vec<u32>,
     pub output: Vec<f32>,
-    pub mult_threads: Vec<usize>,
-    pub output_threads: Vec<usize>,
+    pub mult_threads: Vec<u32>,
+    pub output_threads: Vec<u32>,
 }
 impl Arrays {
     //pub fn with_capacities(mult: usize, src: usize, dest: usize, output: usize, mult_th: usize, output_th: usize) -> Self {
@@ -107,16 +107,16 @@ impl Arrays {
             let connections: Vec<&ConnectionGene> = layer.iter().map(|x| topo.connections_map[x].clone()).flatten().collect(); //ids to connections
             for j in 0..connections.len() { //push data to multiplier, source, and dest
                 arrs.multiplier[arrs_offset + j] = connections[j].weight;
-                arrs.source[arrs_offset + j] = new_map[&connections[j].in_node].0;
-                arrs.dest[arrs_offset + j] = new_map[&connections[j].out_node].0;
+                arrs.source[arrs_offset + j] = new_map[&connections[j].in_node].0 as u32;
+                arrs.dest[arrs_offset + j] = new_map[&connections[j].out_node].0 as u32;
             }
             arrs_offset += connections.len();
 
-            arrs.mult_threads[i] = connections.len();
+            arrs.mult_threads[i] = connections.len() as u32;
             if i == topo.layers.len()-1 { //on the last layer, set to the number of outputs
-                arrs.output_threads[i] = genome.output_ids.len();
+                arrs.output_threads[i] = genome.output_ids.len() as u32;
             } else {
-                arrs.output_threads[i] = topo.layers[i+1].len();
+                arrs.output_threads[i] = topo.layers[i+1].len() as u32;
             }
         }
 

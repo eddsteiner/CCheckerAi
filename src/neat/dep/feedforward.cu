@@ -22,6 +22,21 @@ __global__ void vecmul(float *A, float* B, float *C, int size)
     }
 }
 
+
+__global__ void connection(float* mult, uint32_t* source, uint32_t* dest, float* output, uint32_t offset) {
+    int id = threadIdx.x;
+    atomicAdd(&output[dest[offset + id]], mult[offset + id] * output[source[offset + id]]);
+}
+
+
+__global__ void normalize(float* output, uint32_t offset) {
+    int id = threadIdx.x;
+    output[offset + id] = tanh(output[offset + id]);
+}
+
+
+
+
 extern "C" {
 
     void maxmul(float *A, float* B, float *C, int size) {
@@ -57,7 +72,44 @@ extern "C" {
         cudaFree(gpu_C);
     }
 
-    void calculate(float* mult, size_t* source, size_t* dest, float* output, size_t* mult_threads, size_t* output_threads) {
+
+    void calculate(
+        float* mult,
+        uint32_t* source,
+        uint32_t* dest,
+        float* output,
+        uint32_t* mult_threads,
+        uint32_t* output_threads,
+
+        uint32_t connections_size,
+        uint32_t output_size,
+        uint32_t threads_size
+    ) {
+
+        // allocate arrays onto vram
+        float* g_mult;
+        uint32_t* g_source;
+        uint32_t* g_dest;
+        float* g_output;
+        cudaMalloc((void**)&g_mult, connections_size);
+        cudaMemcpy(g_mult, mult, connections_size, cudaMemcpyHostToDevice);
+        cudaMalloc((void**)&g_source, connections_size);
+        cudaMemcpy(g_source, source, connections_size, cudaMemcpyHostToDevice);
+        cudaMalloc((void**)&g_dest, connections_size);
+        cudaMemcpy(g_dest, dest, connections_size, cudaMemcpyHostToDevice);
+        cudaMalloc((void**)&g_output, output_size);
+        cudaMemcpy(g_output, output, output_size, cudaMemcpyHostToDevice);
+
+        uint32_t mult_offset = 0;
+        uint32_t output_offset = 0;
+
+        // for every layer
+        for (int i = 0; i < threads_size; i++) {
+            connection<<<1, mult_threads[i]>>>(g_mult, g_source, g_dest, g_output, mult_offset);
+            mult_offset += mult_threads[i];
+            normalize<<<1, output_threads[i]>>>(g_output, output_offset);
+            output_offset += output_threads[i];
+        }
 
     }
 

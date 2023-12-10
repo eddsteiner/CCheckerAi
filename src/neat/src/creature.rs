@@ -7,11 +7,15 @@ use crate::genome::{Genome, Arrays};
 extern {
     fn calculate(
         mult: *const f32,
-        source: *const usize,
-        dest: *const usize,
+        source: *const u32,
+        dest: *const u32,
         output: *mut f32,
-        mult_threads: *const usize,
-        output_threads: *const usize,
+        mult_threads: *const u32,
+        output_threads: *const u32,
+
+        connections_size: u32,
+        output_size: u32,
+        threads_size: u32,
     );
 }
 
@@ -49,6 +53,10 @@ impl Creature {
             self.arrays.output.as_mut_ptr(),
             self.arrays.mult_threads.as_ptr(),
             self.arrays.output_threads.as_ptr(),
+
+            self.arrays.multiplier.len() as u32,
+            self.arrays.output.len() as u32,
+            self.arrays.mult_threads.len() as u32,
         )};
 
         Ok(self.arrays.output.as_ptr() as usize)

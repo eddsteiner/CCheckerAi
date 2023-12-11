@@ -27,8 +27,13 @@ def main():
     
     
     
-    
-    
+    #win test
+    # game = ChineseCheckersEngine(p1, p2)
+    # winarray = np.ones(81)
+    # notwin = np.zeros(81)
+    # game.board2 = notwin
+    # print(game.check_win())
+    #print(game.check_win(notwin))
     
     print("going to initialize")
     test = Architect()

@@ -47,18 +47,19 @@ class ChineseCheckersEngine:
     def check_win(self):
         """Checks if there are 10 pieces in home."""
         p1_win = True
-        for index in self.objective_zone2: #top, where player1 is going
+        for index in self.objective_zone1: #top, where player1 is going
+            #self.print_board()
             if self.board1[index] != 1:
                 p1_win = False
-                continue
+                return 0
         if p1_win: #player1 has won
             return 1
             
         p2_win = True
-        for index in self.objective_zone2: #bottom, where player2 is going
+        for index in self.objective_zone1: #bottom, where player2 is going
             if self.board2[index] != 1:
                 p2_win = False
-                continue
+                return 0
         if p2_win: #player2 has won
             return 2
     
@@ -398,10 +399,11 @@ class ChineseCheckersEngine:
                 if board[start_pos + action] != 0 and board[start_pos + action*2] == 0:
 
                     
-                    if self.check_jumps(start_pos + action*2):
+                    if self.check_jumps(start_pos + action*2, board):
                         self.update_board(start_pos, action)
+                        print("move made")
                         #remember all space currently on
-                        self.jump_moves_mem.add(start_pos+action*2)
+                        self.jump_move_mem.add(start_pos+action*2)
                         #self.jump_moves_mem.add(start_pos)
                         self.lock = start_pos + action*2
                         return 1
@@ -414,6 +416,7 @@ class ChineseCheckersEngine:
                     
             if board[start_pos + action ] == 0: #check for a simple slide
                 self.update_board(start_pos, action)
+                print("move made")
                 self.switch_player()
                 return 0
             else:       #if action is not a slide
@@ -421,14 +424,18 @@ class ChineseCheckersEngine:
                 #update board
                 #check for further jump
                 #if no further jump return 0
-                if self.check_jumps(start_pos + action*2):
+                if self.check_jumps(start_pos + action*2, board):
                     self.update_board(start_pos, action)
+                    print("move made")
                     #remember all space currently on
-                    self.jump_moves_mem.add(start_pos+action*2)
-                    self.jump_moves_mem.add(start_pos)
+                    self.jump_move_mem.add(start_pos+action*2)
+                    self.jump_move_mem.add(start_pos)
                     self.lock = start_pos + action*2
                     return 1
                 else:
+                    print("here")
+                    print("start_pos: ", start_pos)
+                    print("action: ", action)
                     self.switch_player()
                     self.jump_move_mem.clear()
                     self.lock = -1
@@ -526,27 +533,55 @@ class ChineseCheckersEngine:
    
     
     def check_jumps(self, start_pos, board)->bool:
-        possible_jumps = np.empty()
-        for action in self.moves:       #goes through all moves at current spot spot
-            if self.current_player: #PLAYER 1
-                if board[start_pos + action] != 0 and board[start_pos + (action*2)] == 0 and start_pos + (action*2) not in self.jump_move_mem: #checks the spot jumping over creatur                         
-                    np.append(possible_jumps, action, axis = 0 ) #adds move tuple to a list
+        possible_jumps = []  # Use a Python list instead of a NumPy array
+
+        for action in self.moves:
+            if start_pos + action < 81:
+                if board[start_pos + action] != 0:
+                    if start_pos + (action * 2) < 81:
+                        if board[start_pos + (action * 2)] == 0:
+                            if start_pos + (action * 2) not in self.jump_move_mem:
+                                possible_jumps.append(action)  # Append action to the list
+
+        if len(possible_jumps) > 0:
+            # Convert the list to a NumPy array if needed
+            possible_jumps = np.array(possible_jumps, dtype=np.float32)
+            print("jumps are possible")
+            return True  # returns jump options
+        else:
+            print("no jump possible")
+            return False  # or returns nothing
+
+
+
+
+        # possible_jumps = np.empty((), dtype=np.float32)
+        # for action in self.moves:       #goes through all moves at current spot spot
+        #     if self.current_player: #PLAYER 1
+
+
+
+        #         if board[start_pos + action] != 0:
+        #             if start_pos + (action*2) < 81:
+        #                 if board[start_pos + (action*2)] == 0:
+        #                     if start_pos + (action*2) not in self.jump_move_mem: #checks the spot jumping over creatur                         
+        #                         np.append(possible_jumps, action, axis = 0 ) #adds move tuple to a list
            
 
         
 
             
 
-        if len(possible_jumps) > 0:
-            # if len(possible_jumps) == 1: #if there is only 1 element
-            #     self.update_board(possible_jumps[0][0], possible_jumps[0][1]) #make the move on the board using the start_pos and the action
-            #     start_pos += possible_jumps[0][1]   #new starting position == the old pos + new action
-            #     self.check_jumps(start_pos) #recursively go again
-            print("jumps are possible")
-            return True   #returns jump options
-        else:
-            print("no jump possible")
-            return False     #or returns nothing
+        # if len(possible_jumps) > 0:
+        #     # if len(possible_jumps) == 1: #if there is only 1 element
+        #     #     self.update_board(possible_jumps[0][0], possible_jumps[0][1]) #make the move on the board using the start_pos and the action
+        #     #     start_pos += possible_jumps[0][1]   #new starting position == the old pos + new action
+        #     #     self.check_jumps(start_pos) #recursively go again
+        #     print("jumps are possible")
+        #     return True   #returns jump options
+        # else:
+        #     print("no jump possible")
+        #     return False     #or returns nothing
 
                     
     

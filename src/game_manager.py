@@ -28,56 +28,70 @@ class GameManager:
         #self.p1 = p1
         #self.p2 = p2
         game = ChineseCheckersEngine(p1, p2)
+
         board1pointer = game.board1.ctypes.data
         board2pointer = game.board2.ctypes.data
-        output_buffer_array = np.empty(417, dtype = np.float32)
+
+        output_buffer_array = np.random.randint(1,418, size = 417)
+        #print(output_buffer_array)
+        #output_buffer_array = np.empty(417, dtype = np.float32)
         output_buffer = output_buffer_array.ctypes.data
         buffer_rankings = np.zeros(len(output_buffer_array))
+
         index_count = 0
         start_pos = 0
         action = 0
         move_to_grab = 1
+
+        player = p1 if game.current_player else p2
+        board_pointer = board1pointer if game.current_player else board2pointer
         #print(output_buffer)
-        if game.current_player:
-            p1.calculate(board1pointer, output_buffer)
-            #rank the buffer readings
-            sorted_indices = np.argsort(output_buffer_array)[::-1]
-            buffer_rankings[sorted_indices] = np.arange(1, len(sorted_indices) + 1)
-            #extract startpos and action
-            for index in buffer_rankings:
-                if index == move_to_grab:
-                    start_pos = self.move_map[index_count][0]
+        
+        player.calculate(board_pointer, output_buffer)
+        #rank the buffer readings
+        sorted_indices = np.argsort(output_buffer_array)[::-1]
+        buffer_rankings[sorted_indices] = np.arange(1, len(sorted_indices) + 1)
+        print(buffer_rankings)
+
+
+
+
+
+
+
+        #------------------------BROKEN
+        #extract startpos and action
+        for index in buffer_rankings:
+            if index == move_to_grab:
+                start_pos = self.move_map[index_count][0]
+                action = self.move_map[index_count][1]
+                index_count = 0
+            else:
+                index_count += 1
+        
+        #insert start pos and action into make_move
+        action_result = game.make_move(start_pos, action, p1)
+        #while make_move returns -1
+        while action_result == -1:
+            move_to_grab += 1           #get the next best move
+            for index in buffer_rankings:   #look for the next best ranking
+                if index == move_to_grab:   #if we find it
+                    start_pos = self.move_map[index_count][0] #extract start pos and action
                     action = self.move_map[index_count][1]
                     index_count = 0
                 else:
                     index_count += 1
-            
-            #insert start pos and action into make_move
-            action_result = game.make_move(start_pos, action, p1)
-            #while make_move returns -1
-            while action_result == -1:
-                move_to_grab += 1           #get the next best move
-                for index in buffer_rankings:   #look for the next best ranking
-                    if index == move_to_grab:   #if we find it
-                        start_pos = self.move_map[index_count][0] #extract start pos and action
-                        action = self.move_map[index_count][1]
-                        index_count = 0
-                    else:
-                        index_count += 1
-                action_result = game.make_move(start_pos, action, p1) #check to see if it will go -1
-            
-            if action_result == 2:
-                return (True, Stats())
-            if action_result == 3:
-                return(False, Stats())
+            action_result = game.make_move(start_pos, action, p1) #check to see if it will go -1
+        
+        if action_result == 2:
+            return (True, Stats())
+        if action_result == 3:
+            return(False, Stats())
 
 
 
             
-        else:
-            p2.calculate(board2pointer, output_buffer)
-            sorted_indices = np.argsort(output_buffer_array)[::-1]
-            buffer_rankings[sorted_indices] = np.arange(1, len(sorted_indices) + 1)
+        
 
         
         

@@ -30,7 +30,8 @@ print(c)
 #print(creature.total_gene_count())
 
 
-generation_manager = neat.GenerationManager(10, 81, 417)
+#generation_manager = neat.GenerationManager(10, 81, 417)
+generation_manager = neat.GenerationManager(150, 81, 417)
 if generation_manager == None:
     print("Could not initialize generation manager!")
 print(generation_manager.population_size)

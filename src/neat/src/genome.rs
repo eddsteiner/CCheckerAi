@@ -175,7 +175,7 @@ impl Arrays {
         //    } 
         //}
 
-        let (bucket_labels, buckets, buckets_genes, active_connections, mut cur_layer) = Arrays::to_buckets(genome)?;
+        let (_, buckets, buckets_genes, active_connections, mut cur_layer) = Arrays::to_buckets(genome)?;
 
         // now that we have the buckets, begin toposort
         let mut past_layers: HashMap<usize, Vec<(u32, HashSet<usize>)>> = HashMap::new(); //<hash, <(layer_number, <layer_ids>)>>

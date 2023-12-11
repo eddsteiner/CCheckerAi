@@ -143,7 +143,7 @@ impl ReproductionHelper {
             };
         
         // create new connections, an "add" mutation
-        let (bucket_labels, buckets, _, _, _) = Arrays::to_buckets(genome).unwrap(); //unwrap is safe
+        let (_, buckets, _, _, _) = Arrays::to_buckets(genome).unwrap(); //unwrap is safe
         let topo = Arrays::toposort(genome).unwrap(); //unwrap is safe
         let layer_nums: Vec<usize> = (0..topo.layers.len()).collect();
         let layers = topo.layers.clone();

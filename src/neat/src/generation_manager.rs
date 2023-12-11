@@ -1,7 +1,8 @@
+use core::slice;
 use std::collections::HashSet;
 
 use pyo3::{prelude::*, types::PyList};
-use rand::Rng;
+use rand::{Rng, seq::SliceRandom};
 use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, Genome, Arrays}, reproduction::ReproductionHelper};
 
 #[pyclass]
@@ -45,6 +46,45 @@ impl GenerationManager {
         }
 
         Ok(list)
+    }
+
+    pub fn evolve(&mut self, rankings_pointer: usize) {
+        let rankings = unsafe { slice::from_raw_parts_mut(rankings_pointer as *mut i32, self.population_size) };
+        let mut ranked_population = Vec::with_capacity(self.population_size);
+        for i in 0..self.population_size { //attach the rankings to the creatures
+            ranked_population.push((rankings[i], i));
+        }
+
+        // kill half the population
+        ranked_population.sort_by(|x, y| x.0.cmp(&y.0)); //sort creature indices by their fitness
+        let order: Vec<usize> = ranked_population.iter().map(|x| x.1).collect(); //ordered indices
+        let new_population: Vec<BCreature> = order[0..self.population.len()/2].iter().map(|x| self.population[*x].clone()).collect();
+
+        // for each open space
+        let mut rng = rand::thread_rng();
+        for _ in 0..self.population.len()-new_population.len() {
+            let creature1 = new_population.choose(&mut rng).unwrap(); //safe unwrap
+            let creature2 = new_population.choose(&mut rng).unwrap(); //safe unwrap
+
+            // breed these two creatures until they create a valid baby
+            let mut new_genome = self.reproduction_helper.reproduce(&creature1.genome, &creature2.genome);
+            self.reproduction_helper.mutate(&mut new_genome);
+            loop {
+                if let None = Arrays::toposort(&new_genome) {
+                    new_genome = self.reproduction_helper.reproduce(&creature1.genome, &creature2.genome);
+                    self.reproduction_helper.mutate(&mut new_genome);
+                    continue; //invalid genome
+                }
+                break; //valid genome
+            }
+
+            // build a creature from the genome
+            let arrays = Arrays::from_genome(&new_genome).unwrap(); //convert the newly created genome into an Arrays struct
+            self.population.push(BCreature {genome: new_genome, arrays: arrays}); //push to the population
+        }
+
+        // push the new population back to the generation manager
+        self.population = new_population;
     }
 }
 impl GenerationManager {

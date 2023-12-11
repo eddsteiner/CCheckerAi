@@ -21,6 +21,7 @@ extern {
 }
 
 
+#[derive(Clone)]
 pub struct BCreature {
     pub genome: Genome,
     pub arrays: Arrays,
@@ -70,11 +71,6 @@ impl Creature {
     }
 }
 
-
-/// Creates a child genome from two parent genomes
-pub fn reproduce() {
-
-}
 
 
 

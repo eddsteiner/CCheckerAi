@@ -14,11 +14,13 @@ class Stats:
 class GameManager:
     p1: Creature
     p2: Creature
-    
+
     def run_game(self, p1: Creature, p2: Creature) -> tuple[bool, Stats]:
         """Will run a game on the two provided creatures"""
-        self.p1 = p1
-        self.p2 = p2
+        #self.p1 = p1
+        #self.p2 = p2
+        move_map = self.get_move_map() #initialize a move map
+        
         
 
         return (True, Stats())

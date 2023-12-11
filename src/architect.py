@@ -60,11 +60,11 @@ class Architect:
         """
 
         #do all the tournament things here
-        #game = GameManager()
-        # rankings = np.array(range(GENERATION_SIZE), dtype = np.int32)
-        # all_creatures = self.neat.get_current_generation()
+        game = GameManager()
+        rankings = np.array(range(GENERATION_SIZE), dtype = np.int32)
+        all_creatures = self.neat.get_current_generation()
         rankings = np.zeros(501)
-        all_creatures = np.arange(501)
+        #all_creatures = np.arange(501)
         wins_array = np.zeros(501) #update this with wins
         print(all_creatures)
         print(wins_array)
@@ -78,8 +78,8 @@ class Architect:
                 while creature2 == creature1:   #keeps looking for new creature if creature 1 and 2 are the same
                     creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]
                 
-                result = self.testgamemanager()
-                #result = game.run_game(creature1, creature2)    #run the game with the creatures
+                #result = self.testgamemanager()
+                result = game.run_game(creature1, creature2)    #run the game with the creatures
 
                 if result:  #if creature 1 wins: add 1 to the creature 1 index in the wins array
                     wins_array[creature1] += 1

@@ -12,14 +12,22 @@ class Stats:
 
 """Runs games on two Creatures"""
 class GameManager:
-    p1: Creature
-    p2: Creature
+    # p1: Creature
+    # p2: Creature
+    # move_map = self.get_move_map()
+
+    def __init__(self, Creature1, Creature2):
+        self.move_map = self.get_move_map().astype(np.int32)
+        self.p1 = Creature1
+        self.p2 = Creature2
 
     def run_game(self, p1: Creature, p2: Creature) -> tuple[bool, Stats]:
         """Will run a game on the two provided creatures"""
         #self.p1 = p1
         #self.p2 = p2
-        move_map = self.get_move_map() #initialize a move map
+        game = ChineseCheckersEngine(p1, p2)
+        
+        
         
         
 
@@ -44,10 +52,10 @@ class GameManager:
                     print("tuple ", added_tuple, " added")
                 else:
                     print("move invalid")
-        for move in moveset: #adds extra moves containing -1 as the start pos (this means skip)
-            skip_tuples = (skip, move)
-            move_map = np.append(move_map, [skip_tuples], axis = 0)
-            print("skip tuple added")
+        #for move in moveset: #adds extra moves containing -1 as the start pos (this means skip)
+        skip_tuples = (skip, moveset[0])
+        move_map = np.append(move_map, [skip_tuples], axis = 0)
+        print("skip tuple added")
 
 
         return move_map

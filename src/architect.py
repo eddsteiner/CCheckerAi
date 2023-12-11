@@ -88,32 +88,6 @@ class Architect:
 
                 games += 1 #iterate game
 
-
-        #print(wins_array)
-        # max_wins = int(max(wins_array))
-        # wins_array = wins_array.astype(int)
-
-        # while len(wins_array) != len(set(wins_array)):
-        #     max_wins = int(max(wins_array))
-        #     #print("there are ties")
-        #     # Create a list of lists where the index represents the number of wins
-        #     win_groups = [[] for _ in range(max_wins + 1)] #if the max is 10 wins, there are 11 empty arrays in the array
-        #     for i, wins in enumerate(wins_array): #i is index of element wins is the value of the element: Example [0,1,2,2,1,0] => [[0,5], [1,4] [2,3]]
-        #         win_groups[wins].append(i)
-
-        #     # Make all tied creatures play again
-        #     for ties in win_groups:
-        #         for i in range(len(ties)):
-        #             for j in range(i + 1, len(ties)):
-        #                 creature1 = all_creatures[ties[i]]
-        #                 creature2 = all_creatures[ties[j]]
-        #                 result = self.testgamemanager()
-        #                 #result = game.run_game(creature1, creature2)
-
-        #                 if result:
-        #                     wins_array[ties[i]] += 1
-        #                 else:
-        #                     wins_array[ties[j]] += 1
         
         # Sort the creatures based on wins and update the rankings array
         sorted_indices = np.argsort(wins_array)[::-1]

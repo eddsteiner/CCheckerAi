@@ -362,7 +362,7 @@ class ChineseCheckersEngine:
     def make_move(self, start_pos: int, action: int, player: bool) -> bool:
 
         #defines the board
-        board = self.board1 if self.player else self.board2
+        board = self.board1 if self.current_player else self.board2
         #checks for wins
         if self.check_win() == 1:   #if function returns 1 
             print("player 1 wins!")

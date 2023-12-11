@@ -5,65 +5,49 @@ from tracemalloc import start
 import numpy as np
 import numpy.typing as npt
 from typing import Any
+from functools import reduce
 
 
 class ChineseCheckersEngine:
     """Manages a Chinese Checkers game."""
 
-    def __init__(self, player1: Any, player2: Any):
+    def __init__(self):
         """Initialize the game boards, objective zones, players, etc."""
-        self.board1 = np.zeros(81) # 9x9 board
-        self.board2 = np.zeros(81) # 9x9 board
-        self.objective_zone1 = [0, 1, 2, 3, 9, 10, 11, 18, 19, 27]
-        self.objective_zone2 = [53, 61, 62, 69, 70, 71, 77, 78, 79, 80]
-        self.moves = [-1, -9, 8, -8, 9, 1]
-        self.jumps = [-2, -18, 16, -16, 18, 2]
-        self.current_player = True  # Start with Player 1
-        self.jump_move_mem = set()
+        self.board1 = np.zeros(81, dtype = np.float32) # 9x9 board
+        self.board2 = np.zeros(81, dtype = np.float32) # 9x9 board
+        self.home_top = np.array([0, 1, 2, 3, 9, 10, 11, 18, 19, 27], dtype = np.int32)
+        self.home_bot = np.array([53, 61, 62, 69, 70, 71, 77, 78, 79, 80], dtype = np.int32)
+        self.actions = np.array([-1, -9, 8, -8, 9, 1], dtype = np.int32) #upleft, upright, left, right, downleft, downright
+        self.middle_row = np.array([72, 64, 56, 48, 40, 32, 24, 16, 8], dtype = np.int32) #for collecting stats
+
         self.lock = -1
-        self.player1 = player1
-        self.player2 = player2
+        self.jump_history = set()
+        self.turn = True  #start with player1
+
         self.initialize_board()
 
 
     def initialize_board(self):
         """Initialize the game boards."""
-        for index in self.objective_zone1:
-            self.board1[index] = 2 #fills objective 1 with player 1 pieces
-        for index in self.objective_zone2:
-            self.board1[index] = 1 #fills objective 2 with player 2 pieces
-
-        for index in self.objective_zone1:
-            self.board2[index] = 2 #fills objective 1 with player 1 pieces
-        for index in self.objective_zone2:
-            self.board2[index] = 1 #fills objective 2 with player 2 pieces
+        for index in self.home_top: #fill in opponent pieces
+            self.board1[index] = 2
+            self.board2[index] = 2
+        for index in self.home_bot: #fill in player pieces
+            self.board1[index] = 1
+            self.board2[index] = 1
 
 
-    def switch_player(self):
-        """Switch to the next player's turn."""
+    def switch_turn(self):
+        """Switch to the other player's turn."""
         self.current_player = not self.current_player
 
 
-    def check_win(self):
+    def check_win(self) -> bool:
         """Checks if there are 10 pieces in home."""
-        p1_win = True
-        for index in self.objective_zone1: #top, where player1 is going
-            #self.print_board()
-            if self.board1[index] != 1:
-                p1_win = False
-                return 0
-        if p1_win: #player1 has won
-            return 1
-            
-        p2_win = True
-        for index in self.objective_zone1: #bottom, where player2 is going
-            if self.board2[index] != 1:
-                p2_win = False
-                return 0
-        if p2_win: #player2 has won
-            return 2
+        board = self.board1 if self.turn else self.board2
+        x = list(filter(lambda x: not x, map(lambda x: board[x] == 1, self.home_top))) #find if there's a single piece that isn't the player's
+        return len(x) == 0
     
-        return 0  # No player has won yet
 
 
 #------------------------------------------------------------------------------------------------------------------------

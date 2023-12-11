@@ -39,10 +39,10 @@ impl Creature {
     /// Accepts a pointer to a board and returns the calculated confidences for each move
     pub fn calculate(&mut self, board_pointer: usize, output_pointer: usize) {
         // first we need to copy the values to our output vector
-        let board = unsafe { slice::from_raw_parts_mut(board_pointer as *mut i32, self.input_size) };
+        let board = unsafe { slice::from_raw_parts_mut(board_pointer as *mut f32, self.input_size) };
         let output = unsafe { slice::from_raw_parts_mut(output_pointer as *mut f32, 417) };
         for i in 0..self.input_size {
-            self.arrays.output[i+1] = board[i] as f32;
+            self.arrays.output[i+1] = board[i];
         }
 
         // clean up all node values (except the bias since that should never change)

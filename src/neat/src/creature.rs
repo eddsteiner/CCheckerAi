@@ -37,9 +37,10 @@ pub struct Creature {
 impl Creature {
 
     /// Accepts a pointer to a board and returns the calculated confidences for each move
-    pub fn calculate(&mut self, board_pointer: usize) -> PyResult<usize> {
+    pub fn calculate(&mut self, board_pointer: usize, output_pointer: usize) {
         // first we need to copy the values to our output vector
         let board = unsafe { slice::from_raw_parts_mut(board_pointer as *mut i32, self.input_size) };
+        let output = unsafe { slice::from_raw_parts_mut(output_pointer as *mut f32, 417) };
         for i in 0..self.input_size {
             self.arrays.output[i+1] = board[i] as f32;
         }
@@ -62,7 +63,10 @@ impl Creature {
             self.arrays.mult_threads.len() as u32,
         )};
 
-        Ok(self.arrays.output.as_ptr() as usize)
+        // push output values to buffer
+        for i in 0..417 {
+            output[i] = self.arrays.output[(self.arrays.output.len()-417)+i];
+        }
     }
 }
 impl Creature {

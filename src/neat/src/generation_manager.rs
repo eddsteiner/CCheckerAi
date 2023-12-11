@@ -7,6 +7,7 @@ use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, 
 #[pyclass]
 pub struct GenerationManager {
     #[pyo3(get)]
+    
     population_size: usize,
     input_count: usize, //true input count (excluding bias)
     output_count: usize,
@@ -21,6 +22,7 @@ impl GenerationManager {
         //let input_count = input_count as u32;
         //let output_count = output_count as u32;
         let mut gen_man = GenerationManager {
+            
             population_size: population_size as usize,
             input_count: input_count as usize,
             output_count: output_count as usize,
@@ -80,7 +82,7 @@ impl GenerationManager {
                     });
                 }
             }
-
+            
             self.reproduction_helper.innov = (self.input_count+1) * self.output_count; //number of connections
             self.reproduction_helper.id = (self.input_count+1) + self.output_count; //number of nodes
 

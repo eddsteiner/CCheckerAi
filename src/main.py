@@ -12,15 +12,15 @@ from game_manager import GameManager
 
 
 def main():
-    p1 = 0
-    p2 = 0
-    manager = GameManager(p1, p2)
-    #array = manager.get_move_map()
-    print(manager.move_map)
-    length = len(manager.move_map)
-    dtype_of_move_map = manager.move_map.dtype  # Get the dtype of the array
-    print("dtype: ", dtype_of_move_map)
-    print("array length: ", length)
+    # p1 = 0
+    # p2 = 0
+    # manager = GameManager(p1, p2)
+    # #array = manager.get_move_map()
+    # print(manager.move_map)
+    # length = len(manager.move_map)
+    # dtype_of_move_map = manager.move_map.dtype  # Get the dtype of the array
+    # print("dtype: ", dtype_of_move_map)
+    # print("array length: ", length)
     
     
     
@@ -30,10 +30,11 @@ def main():
     
     
     
-    
-    # test = Architect()
-    # rankingsArray = test.evolve()
-    # print(rankingsArray)
+    print("going to initialize")
+    test = Architect()
+    print("initialized")
+    rankingsArray = test.evolve()
+    print(rankingsArray)
 
 
 

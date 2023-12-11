@@ -14,7 +14,9 @@ class Architect:
 
 
     def __init__(self):
-        self.neat = GenerationManager(81, 255, GENERATION_SIZE) #THE 255 IS TEMPORARY, CHANGE LATER TODO
+        print("inside initialize")
+        self.neat = GenerationManager(GENERATION_SIZE,81, 417) 
+        print("done initializing")
         """Contains all the creatures in this generation."""
 
 
@@ -60,16 +62,19 @@ class Architect:
         """
 
         #do all the tournament things here
-        game = GameManager()
+        
         rankings = np.array(range(GENERATION_SIZE), dtype = np.int32)
         all_creatures = self.neat.get_current_generation()
-        rankings = np.zeros(501)
+        #rankings = np.zeros(501)
+
         #all_creatures = np.arange(501)
-        wins_array = np.zeros(501) #update this with wins
+        wins_array = np.zeros(len(rankings)) #update this with wins
         print(all_creatures)
         print(wins_array)
-        
+        game = GameManager()
+        index_count = 0
         for creature in all_creatures:  #loops through all creatures to feed to game manager
+            
             games = 0
             while games <= 9:  #playing 10 games per creature
                 creature1 = creature
@@ -81,12 +86,14 @@ class Architect:
                 #result = self.testgamemanager()
                 result = game.run_game(creature1, creature2)    #run the game with the creatures
 
-                if result:  #if creature 1 wins: add 1 to the creature 1 index in the wins array
-                    wins_array[creature1] += 1
+                if result[0] == True:  #if creature 1 wins: add 1 to the creature 1 index in the wins array
+                    wins_array[index_count] += 1
                 # else:       #if creature 2 wins: add 1 to the creature 2 index in the wins array
                 #     wins_array[creature2] += 1
 
                 games += 1 #iterate game
+
+            index_count += 1 #keeps track of creature 1 index
 
         
         # Sort the creatures based on wins and update the rankings array
@@ -115,7 +122,7 @@ class Architect:
 
         #want to call the internal deallocation function, as well as the internal repopulate function
         #just do a bunch of internal things and then call them here, while considering memory safety
-        rankings = self.__ranking()
+        #rankings = self.__ranking()
         
 
         return self.neat.evolve(rankings.ctypes.data)

@@ -360,17 +360,18 @@ class ChineseCheckersEngine:
     # 3: player 2 wins
 
     def make_move(self, start_pos: int, action: int, player: bool) -> bool:
-        """Returns: True = made move, False = invalid move."""
-        #check for valid piece picked
+
+        #defines the board
         board = self.board1 if self.player else self.board2
-        if self.check_win() == 1:
+        #checks for wins
+        if self.check_win() == 1:   #if function returns 1 
             print("player 1 wins!")
             return 2
-        if self.check_win() == 2:
+        if self.check_win() == 2:   #if function returns 2
             print("player 2 wins")
             return 3
 
-        
+        #check for valid piece picked
         if start_pos != -1 and board[start_pos] != 1:     #check if player 1 picked player 1 piece
             print('CMON MAN PICK A PIECE THAT IS YOURS. YOUR PIECE SAYS 1')
             

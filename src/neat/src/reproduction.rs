@@ -1,26 +1,29 @@
-use std::collections::HashSet;
+use std::collections::{HashSet, HashMap};
 
 use crate::genome::{Genome, ConnectionGene, NodeGene, Arrays};
-use rand::Rng;
+use rand::{Rng, seq::SliceRandom};
 
 
 /// Used during reproduction to keep track of an innovation
-struct Innov {
-    innov: usize,
-    in_node: usize,
-    out_node: usize,
+#[derive(PartialEq, Eq, Hash)]
+pub struct Innov {
+    pub in_node: usize,
+    pub out_node: usize,
+    pub split: bool, //specifies whether the two nodes were split or whether a connection was added
+    //pub innov: usize, //contains the innov for the new connection if no split, or the innov for the first connection and +1 for the second one
 }
 
 
 /// Facilitates genome reproduction
 pub struct ReproductionHelper {
+    pub cur_innovations: HashMap<Innov, (usize, usize)>, //second data type is a tuple containing the innov, innov+1 if split, and the new node id
     pub innov: usize,
     pub id: usize,
 }
 impl ReproductionHelper {
     /// Creates a new ReproductionHelper with the given global innov number
     pub fn new(innov: usize, id: usize) -> Self {
-        ReproductionHelper { innov, id }
+        ReproductionHelper { innov, id, cur_innovations: HashMap::new() }
     }
 
     /// Creates a child genome from two parent genomes
@@ -106,7 +109,7 @@ impl ReproductionHelper {
     }
 
 
-    // Takes an existing genome and mutates it
+    /// Takes an existing genome and mutates it
     pub fn mutate(&mut self, genome: &mut Genome) {
         let mut rng = rand::thread_rng();
         let num_add_mutations = //number of connections to add, if any are available
@@ -139,19 +142,139 @@ impl ReproductionHelper {
                 0
             };
         
+        // create new connections, an "add" mutation
+        let (bucket_labels, buckets, _, _, _) = Arrays::to_buckets(genome).unwrap(); //unwrap is safe
+        let topo = Arrays::toposort(genome).unwrap(); //unwrap is safe
+        let layer_nums: Vec<usize> = (0..topo.layers.len()).collect();
+        let layers = topo.layers.clone();
         for _ in 0..num_add_mutations { //find a set of two nodes that are currently unconnected
-            let (bucket_labels, buckets, _, _, _) = Arrays::to_buckets(genome).unwrap();
-            //if buckets.contains_key(k)
-            // grab any node and see if its bucket is the same size as all nodes
+            for _ in 0..6 { //try six times before giving up
+                // find a valid node to start at
+                let layer = *layer_nums.choose(&mut rng).unwrap();
+                let nodes_in_layer = &layers[layer];
+                let node = *nodes_in_layer.choose(&mut rng).unwrap(); //start node
+                let out_nodes = buckets.get(&layer).unwrap(); //safe unwrap, the nodes our node leads to currently
 
-            
+                // now we want to connect this node to some node in the same layer or after
+                let after_layer_nums: Vec<usize> = (layer..layers.len()).collect(); //choose a layer to connect to
+                let target_layer = *after_layer_nums.choose(&mut rng).unwrap(); //the layer num we'd like to connect to
+                let target_nodes = &layers[target_layer]; //the nodes in the layer we'd like to connect to
+                // all the nodes in the layer that this node doesn't connect to
+                let not_contained: Vec<usize> = target_nodes.iter().map(|x| (out_nodes.contains(x), *x)).filter(|x| !x.0).map(|x| x.1).collect();
+                
+                if not_contained.len() == 0 { //we already lead to all of these nodes
+                    continue; //try again
+                }
+
+                // found a start node and a list of not_contained nodes that we can use as output nodes
+                let output_node = *not_contained.choose(&mut rng).unwrap(); //choose an output node
+
+                // ensure this mutation hasn't happened before
+                let innov_struct = Innov { in_node: node, out_node: output_node, split: false };
+                if self.cur_innovations.contains_key(&innov_struct) { //we've already had this innovation before
+                    let innov = *self.cur_innovations.get(&innov_struct).unwrap(); //safe unwrap
+                    let gene = ConnectionGene {
+                        in_node: node,
+                        out_node: output_node,
+                        weight: rng.gen_range(-5.0..5.0), //randomized weight
+                        enabled: true, //let's just enable by default if mutated into existence
+                        innov: innov.0,
+                    };
+                    genome.connections.push(gene); //push the new mutated connection
+                    break;
+                } else { //haven't seen this innovation before, 
+                    self.cur_innovations.insert(innov_struct, (self.innov, 0)); //remember this innovation
+                    let gene = ConnectionGene {
+                        in_node: node,
+                        out_node: output_node,
+                        weight: rng.gen_range(-5.0..5.0), //randomized weight
+                        enabled: true, //let's just enable by default if mutated into existence
+                        innov: self.innov,
+                    };
+                    self.innov += 1;
+                    genome.connections.push(gene); //push the new mutated connection
+                    break;
+                }
+            }
         }
 
-        for _ in 0..num_add_mutations { //split any connection
-            
-        }
+        // create new nodes, a "split" mutation
+        for _ in 0..num_split_mutations { //split any connection
+            for _ in 0..6 { //try six times before giving up
+                // first select some connection to split
+                let connection = genome.connections.choose(&mut rng).unwrap(); //choose an output node
+                let innov_struct = Innov { in_node: connection.in_node, out_node: connection.out_node, split: true };
+                
+                // check if we've split this before
+                if self.cur_innovations.contains_key(&innov_struct) {
+                    let innov = self.cur_innovations.get(&innov_struct).unwrap(); //safe unwrap
 
-        todo!()
+                    // ensure we disable the old connection
+                    let connection_mut = genome.connections.choose_mut(&mut rng).unwrap(); //choose an output node, drops old connection
+                    connection_mut.enabled = false;
+                    let connection = genome.connections.choose(&mut rng).unwrap(); //re-establish the borrow
+
+                    let node_gene = NodeGene {
+                        id: innov.1,
+                        node_type: 2,
+                    };
+                    let start_gene = ConnectionGene {
+                        in_node: connection.in_node,
+                        out_node: innov.1,
+                        weight: connection.weight,
+                        enabled: true, //let's just enable by default if mutated into existence
+                        innov: innov.0,
+                    };
+                    let end_gene = ConnectionGene {
+                        in_node: innov.1,
+                        out_node: connection.out_node,
+                        weight: 1.0, //set to 1 by default
+                        enabled: true, //let's just enable by default if mutated into existence
+                        innov: innov.0 + 1,
+                    };
+
+                    // push the new genes
+                    genome.nodes.push(node_gene);
+                    genome.connections.push(start_gene);
+                    genome.connections.push(end_gene);
+                    break;
+                } else { //haven't seen this split before
+                    self.cur_innovations.insert(innov_struct, (self.innov, self.id)); //remember this innovation
+
+                    // ensure we disable the old connection
+                    let connection_mut = genome.connections.choose_mut(&mut rng).unwrap(); //choose an output node, drops old connection
+                    connection_mut.enabled = false;
+                    let connection = genome.connections.choose(&mut rng).unwrap(); //re-establish the borrow
+
+                    let node_gene = NodeGene {
+                        id: self.id,
+                        node_type: 2,
+                    };
+                    let start_gene = ConnectionGene {
+                        in_node: connection.in_node,
+                        out_node: self.id,
+                        weight: connection.weight,
+                        enabled: true,
+                        innov: self.innov,
+                    };
+                    let end_gene = ConnectionGene {
+                        in_node: self.id,
+                        out_node: connection.out_node,
+                        weight: 1.0,
+                        enabled: true,
+                        innov: self.innov+1,
+                    };
+                    self.innov += 1;
+                    self.id += 1;
+
+                    // push the new genes
+                    genome.nodes.push(node_gene);
+                    genome.connections.push(start_gene);
+                    genome.connections.push(end_gene);
+                    break;
+                }
+            }
+        }
     }
 }
 

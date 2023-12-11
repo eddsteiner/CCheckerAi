@@ -4,6 +4,7 @@ use std::collections::{HashMap, HashSet};
 #[derive(Clone, Debug)]
 pub struct NodeGene {
     pub id: usize,
+    /// 0 = input, 1 = output, 2 = hidden
     pub node_type: u8,
 }
 
@@ -146,7 +147,7 @@ impl Arrays {
 
 
     /// Turns a genome into layers, or None if genome encodes for a cyclic neural net
-    fn toposort(genome: &Genome) -> Option<TopoStruct> {
+    pub fn toposort(genome: &Genome) -> Option<TopoStruct> {
         
         //// populate the buckets with all the enabled connections (excluding output connections)
         //let mut bucket_labels: HashSet<usize> = HashSet::new();

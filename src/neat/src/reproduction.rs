@@ -65,7 +65,11 @@ impl ReproductionHelper {
                 new_gene = parent1.connections[index1-1].clone();
                 let distance = (parent1.connections[index1-1].weight - parent2.connections[index2-1].weight).abs() / 2.0;
                 let center = parent1.connections[index1-1].weight / 2.0 + parent2.connections[index2-1].weight / 2.0;
-                new_gene.weight = rng.gen_range(center-distance..center+distance); //possible range for the mutated weight
+                if distance == 0.0 {
+                    new_gene.weight = center; //no mutation if both parents have the exact same i guess
+                } else {
+                    new_gene.weight = rng.gen_range(center-distance..center+distance); //possible range for the mutated weight
+                }
             } else if in1 { //just parent1 contains a gene
                 if rng.gen_bool(0.5) { //50% chance of not adding the gene
                     continue;
@@ -145,9 +149,12 @@ impl ReproductionHelper {
         // create new connections, an "add" mutation
         let (_, buckets, _, _, _) = Arrays::to_buckets(genome).unwrap(); //unwrap is safe
         let topo = Arrays::toposort(genome).unwrap(); //unwrap is safe
-        let layer_nums: Vec<usize> = (0..topo.layers.len()).collect();
+        let layer_nums: Vec<usize> = (1..topo.layers.len()).collect();
         let layers = topo.layers.clone();
         for _ in 0..num_add_mutations { //find a set of two nodes that are currently unconnected
+            if layer_nums.len() == 0 {
+                break;
+            }
             for _ in 0..6 { //try six times before giving up
                 // find a valid node to start at
                 let layer = *layer_nums.choose(&mut rng).unwrap();

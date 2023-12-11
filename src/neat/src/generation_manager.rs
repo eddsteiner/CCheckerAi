@@ -69,18 +69,24 @@ impl GenerationManager {
             // breed these two creatures until they create a valid baby
             let mut new_genome = self.reproduction_helper.reproduce(&creature1.genome, &creature2.genome);
             self.reproduction_helper.mutate(&mut new_genome);
+            let arrays: Arrays;
             loop {
-                if let None = Arrays::toposort(&new_genome) {
-                    new_genome = self.reproduction_helper.reproduce(&creature1.genome, &creature2.genome);
-                    self.reproduction_helper.mutate(&mut new_genome);
-                    continue; //invalid genome
+                match Arrays::from_genome(&new_genome) {
+                    Some(x) => {
+                        arrays = x;
+                        break;
+                    },
+                    None => {
+                        new_genome = self.reproduction_helper.reproduce(&creature1.genome, &creature2.genome);
+                        self.reproduction_helper.mutate(&mut new_genome);
+                    }
                 }
-                break; //valid genome
             }
 
             // build a creature from the genome
-            let arrays = Arrays::from_genome(&new_genome).unwrap(); //convert the newly created genome into an Arrays struct
+            //let arrays = Arrays::from_genome(&new_genome).unwrap(); //convert the newly created genome into an Arrays struct
             self.population.push(BCreature {genome: new_genome, arrays: arrays}); //push to the population
+
         }
 
         // push the new population back to the generation manager

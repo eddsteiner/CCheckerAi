@@ -20,28 +20,28 @@ class Architect:
         """Contains all the creatures in this generation."""
 
 
-    def save_generation(self) -> bool:
-        """
-        TODO Saves the current sorted generation to a file.
+    #def save_generation(self) -> bool:
+    #    """
+    #    TODO Saves the current sorted generation to a file.
 
-        Returns True if process succeeded, False otherwise.
-        """
+    #    Returns True if process succeeded, False otherwise.
+    #    """
 
-        # ensure the folder where we save generations is created
-        gen = self.neat.generation_number
-        ranking = self.__ranking()
-        file_name = f"generations/gen_{gen}.gen"
-        return self.neat.save_generation(ranking.ctypes.data, file_name) #save
+    #    # ensure the folder where we save generations is created
+    #    gen = self.neat.generation_number
+    #    ranking = self.__ranking()
+    #    file_name = f"generations/gen_{gen}.gen"
+    #    return self.neat.save_generation(ranking.ctypes.data, file_name) #save
 
 
-    def load_generation(self, file_name: str) -> bool:
-        """
-        Loads a sorted generation from a file.
+    #def load_generation(self, file_name: str) -> bool:
+    #    """
+    #    Loads a sorted generation from a file.
 
-        Returns True if process succeeded, False otherwise.
-        """
+    #    Returns True if process succeeded, False otherwise.
+    #    """
 
-        return self.neat.load_generation(file_name)
+    #    return self.neat.load_generation(file_name)
 
 
     def evolve(self) -> bool:
@@ -69,8 +69,8 @@ class Architect:
 
         #all_creatures = np.arange(501)
         wins_array = np.zeros(len(rankings)) #update this with wins
-        print(all_creatures)
-        print(wins_array)
+        #print(all_creatures)
+        #print(wins_array)
         game = GameManager()
         index_count = 0
         for creature in all_creatures:  #loops through all creatures to feed to game manager
@@ -104,12 +104,6 @@ class Architect:
         print("wins array")
         print(wins_array)
 
-
-                
-
-
-                
-
         return rankings
 
 
@@ -124,7 +118,6 @@ class Architect:
         #just do a bunch of internal things and then call them here, while considering memory safety
         #rankings = self.__ranking()
         
-
         return self.neat.evolve(rankings.ctypes.data)
 
     def testgamemanager(self):

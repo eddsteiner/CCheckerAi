@@ -47,7 +47,7 @@ class ChineseCheckersEngine:
     def check_win(self):
         """Checks if there are 10 pieces in home."""
         p1_win = True
-        for index in self.objective_zone1: #top, where player1 is going
+        for index in self.objective_zone2: #top, where player1 is going
             if self.board1[index] != 1:
                 p1_win = False
                 continue
@@ -352,11 +352,23 @@ class ChineseCheckersEngine:
 #------------------------------------------------------------------------------------------------------------------------
 #MAKE MOVE
 
+    #this move returns integers that mean different outcomes:
+    # -1: move is invalid and cannot be made
+    # 0: move was accepted, player is switched, lock is cleared, and jump mem is cleared
+    # 1: jump has been initiated and there is a chance of another jump
+    # 2: player 1 wins
+    # 3: player 2 wins
 
     def make_move(self, start_pos: int, action: int, player: bool) -> bool:
         """Returns: True = made move, False = invalid move."""
         #check for valid piece picked
         board = self.board1 if self.player else self.board2
+        if self.check_win() == 1:
+            print("player 1 wins!")
+            return 2
+        if self.check_win() == 2:
+            print("player 2 wins")
+            return 3
 
         
         if start_pos != -1 and board[start_pos] != 1:     #check if player 1 picked player 1 piece

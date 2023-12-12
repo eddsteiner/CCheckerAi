@@ -45,16 +45,20 @@ class Architect:
         all_creatures = self.neat.get_current_generation()
 
         for i in range(len(all_creatures)):  #loops through all creatures to feed to game manager
+            print(f"running games for creature {i}")
             creature = all_creatures[i]
             
-            for _ in range(10):  #playing 10 games per creature
+            for j in range(10):  #playing 10 games per creature
+                print(f"running game {j}")
                 creature1 = creature
                 creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]  #randomizing creature 2
 
                 while creature2 == creature1:   #keeps looking for new creature if creature 1 and 2 are the same
                     creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]
                 
+                print(f"before")
                 result, stats = game.run_game(creature1, creature2)    #run the game with the creatures
+                print(f"after")
                 if result:  #if creature 1 wins: add 1 to the creature 1 index in the wins array
                     wins_array[i] += 1
         

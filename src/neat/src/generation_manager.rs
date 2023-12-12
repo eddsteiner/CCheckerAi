@@ -42,7 +42,9 @@ impl GenerationManager {
         // convert each BCreature into a Python Creature
         for i in 0..self.population_size {
             let arrs = self.population[i].arrays.clone();
-            list.append(Creature::from(arrs, self.input_count).into_py(py))?; //convert arrs into a Creature then into a Python object
+            let node_count = self.population[i].genome.nodes.len();
+            let connection_count = self.population[i].genome.connections.len();
+            list.append(Creature::from(arrs, self.input_count, node_count, connection_count).into_py(py))?; //convert arrs into a Creature then into a Python object
         }
 
         Ok(list)

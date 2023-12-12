@@ -192,9 +192,9 @@ impl Arrays {
 
         let topo = TopoStruct { layers: layers, connections: active_connections, connections_map: buckets_genes };
         
-        let mut x: Vec<usize> = topo.layers.iter().flatten().map(|x| *x).collect();
-        x.sort_unstable();
-        let y: HashSet<usize> = HashSet::from_iter(x.clone().into_iter());
+        //let mut x: Vec<usize> = topo.layers.iter().flatten().map(|x| *x).collect();
+        //x.sort_unstable();
+        //let y: HashSet<usize> = HashSet::from_iter(x.clone().into_iter());
         //if x.len() != y.len() {
         //    println!("{:?}", x);
         //    todo!();

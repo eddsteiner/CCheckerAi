@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.typing as npt
+from scipy.stats import entropy
 import random
 
 from neat import Creature
@@ -8,7 +9,14 @@ from engine import ChineseCheckersEngine
 
 class Stats:
     """Contains stats about a Chinese Checkers game."""
-    pass
+    turns: int
+    tied: bool
+    player1_spread: float
+    player1_nodes: int
+    player1_connections: int
+    player2_spread: float
+    player2_nodes: int
+    player2_connections: int
 
 
 class GameManager:
@@ -41,17 +49,32 @@ class GameManager:
         """Runs one game on two creatures."""
         swap_players = random.getrandbits(1) == 1
         if swap_players: #want to randomize who's player1 and player2
-            creature_temp = creature1
-            creature1 = creature2
-            creature2 = creature_temp
+            player1 = creature2
+            player2 = creature1
+        else:
+            player1 = creature1
+            player2 = creature2
 
         result = -1
         game = ChineseCheckersEngine()
         output_buffer_array = np.zeros(417, dtype = np.float32)
         output_buffer_pointer = output_buffer_array.ctypes.data
         game_running = True
+        last_player = game.current_player
+
+        turn_count = 0
+        middle_row1 = np.zeros(9, dtype = np.int32)
+        middle_row2 = np.zeros(9, dtype = np.int32)
+
         while game_running: #unti the game ends
-            (creature1 if game.current_player else creature2).calculate( #grab correct creature
+            if last_player != game.current_player:
+                if turn_count == 1000: #keep track of how many turns have happened
+                    break
+                else:
+                    turn_count += 1
+                    last_player = game.current_player
+
+            (player1 if game.current_player else player2).calculate( #grab correct player
                 (game.board1 if game.current_player else game.board2).ctypes.data, #grab correct board
                 output_buffer_pointer #feed the output buffer
             ) #calculate the move confidences
@@ -63,13 +86,33 @@ class GameManager:
                     case -1: #move is invalid, try the next one
                         continue
                     case 0: #move is valid, now the other persons's turn
+                        if tile in game.middle_row:
+                            middle_row = middle_row1 if game.current_player else middle_row2
+                            middle_row[game.middle_row_dict[tile]] #count the index in middle row
                         break
                     case 1: #more jumps available, recalculate
                         break
                     case 2: #game was just won by the current player
                         game_running = False
                         break
+        
+        # record the stats
+        stats = Stats()
+        stats.turns = turn_count
+        stats.player1_nodes = creature1.node_count
+        stats.player1_connections = creature1.connection_count
+        stats.player2_nodes = creature2.node_count
+        stats.player2_connections = creature2.connection_count
+        middle1 = middle_row2 if swap_players else middle_row1
+        middle2 = middle_row1 if swap_players else middle_row2
+        stats.player1_spread = float(entropy(middle1))
+        stats.player2_spread = float(entropy(middle2))
 
+        if turn_count == 1000: #game tied, choose random winner
+            stats.tied = True
+            return (random.getrandbits(1) == 1, Stats())
+
+        stats.tied = False
         return (not game.current_player) if swap_players else game.current_player, Stats()
 
        

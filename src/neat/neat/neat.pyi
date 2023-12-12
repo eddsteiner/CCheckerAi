@@ -42,6 +42,9 @@ class GenerationManager:
 class Creature:
     """An individual Creature which can play Chinese Checkers."""
 
+    node_count: int
+    connection_count: int
+
     def calculate(self, board: int, output_buf: int) -> None:
         """
         Takes a pointer to a board and an output buffer, and

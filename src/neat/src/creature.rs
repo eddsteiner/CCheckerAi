@@ -32,6 +32,8 @@ pub struct BCreature {
 pub struct Creature {
     pub arrays: Arrays,
     pub input_size: usize,
+    pub node_count: usize,
+    pub connection_count: usize,
 }
 #[pymethods]
 impl Creature {
@@ -70,8 +72,8 @@ impl Creature {
     }
 }
 impl Creature {
-    pub fn from(arrays: Arrays, input_size: usize) -> Self {
-        Creature { arrays, input_size }
+    pub fn from(arrays: Arrays, input_size: usize, node_count: usize, connection_count: usize) -> Self {
+        Creature { arrays, input_size, node_count, connection_count }
     }
 }
 

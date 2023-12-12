@@ -17,6 +17,7 @@ class ChineseCheckersEngine:
         self.current_player = True  #start with player1
 
         self.middle_row = {72, 64, 56, 48, 40, 32, 24, 16, 8} #for collecting stats
+        self.middle_row_dict = {72:0, 64:1, 56:2, 48:3, 40:4, 32:5, 24:6, 16:7, 8:8} #for collecting stats
 
         self.initialize_board()
 
@@ -100,7 +101,13 @@ class ChineseCheckersEngine:
             return False
         elif board[tile + action] == 0: #slide
             return True
-        elif board[tile + action * 2] == 0: #slide is invalid but jump is valid
+
+        # we've covered slides (not possible), now check for jumps
+        if not self.is_move_possible(tile + action, action): #can never jump on this tile and action
+            return False
+
+        # it's possible to jump on this tile, so check to see if the jump is valid
+        if board[tile + action * 2] == 0: #slide is invalid but jump is valid
             return True
 
         return False #slide and jump are both invalid
@@ -114,7 +121,7 @@ class ChineseCheckersEngine:
                 return True
             elif tile != self.lock: #if lock doesn't match
                 return False
-        if not self.is_move_possible(tile, action): #if move impossible
+        if not self.is_move_valid(tile, action): #if move impossible
             return False
 
         board = self.board1 if self.current_player else self.board2

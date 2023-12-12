@@ -15,33 +15,9 @@ class Architect:
 
     def __init__(self):
         print("inside initialize")
-        self.neat = GenerationManager(GENERATION_SIZE,81, 417) 
+        self.neat = GenerationManager(GENERATION_SIZE, 81, 417) 
         print("done initializing")
         """Contains all the creatures in this generation."""
-
-
-    #def save_generation(self) -> bool:
-    #    """
-    #    TODO Saves the current sorted generation to a file.
-
-    #    Returns True if process succeeded, False otherwise.
-    #    """
-
-    #    # ensure the folder where we save generations is created
-    #    gen = self.neat.generation_number
-    #    ranking = self.__ranking()
-    #    file_name = f"generations/gen_{gen}.gen"
-    #    return self.neat.save_generation(ranking.ctypes.data, file_name) #save
-
-
-    #def load_generation(self, file_name: str) -> bool:
-    #    """
-    #    Loads a sorted generation from a file.
-
-    #    Returns True if process succeeded, False otherwise.
-    #    """
-
-    #    return self.neat.load_generation(file_name)
 
 
     def evolve(self) -> bool:
@@ -63,38 +39,24 @@ class Architect:
 
         #do all the tournament things here
         
-        rankings = np.array(range(GENERATION_SIZE), dtype = np.int32)
-        all_creatures = self.neat.get_current_generation()
-        #rankings = np.zeros(501)
-
-        #all_creatures = np.arange(501)
-        wins_array = np.zeros(len(rankings)) #update this with wins
-        #print(all_creatures)
-        #print(wins_array)
         game = GameManager()
-        index_count = 0
-        for creature in all_creatures:  #loops through all creatures to feed to game manager
+        rankings = np.array(range(GENERATION_SIZE), dtype = np.int32)
+        wins_array = np.zeros(len(rankings), dtype = np.int32) #update this with wins
+        all_creatures = self.neat.get_current_generation()
+
+        for i in range(len(all_creatures)):  #loops through all creatures to feed to game manager
+            creature = all_creatures[i]
             
-            games = 0
-            while games <= 9:  #playing 10 games per creature
+            for _ in range(10):  #playing 10 games per creature
                 creature1 = creature
                 creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]  #randomizing creature 2
 
                 while creature2 == creature1:   #keeps looking for new creature if creature 1 and 2 are the same
                     creature2 = all_creatures[random.randint(0, len(all_creatures) - 1)]
                 
-                #result = self.testgamemanager()
-                result = game.run_game(creature1, creature2)    #run the game with the creatures
-
-                if result[0] == True:  #if creature 1 wins: add 1 to the creature 1 index in the wins array
-                    wins_array[index_count] += 1
-                # else:       #if creature 2 wins: add 1 to the creature 2 index in the wins array
-                #     wins_array[creature2] += 1
-
-                games += 1 #iterate game
-
-            index_count += 1 #keeps track of creature 1 index
-
+                result, stats = game.run_game(creature1, creature2)    #run the game with the creatures
+                if result:  #if creature 1 wins: add 1 to the creature 1 index in the wins array
+                    wins_array[i] += 1
         
         # Sort the creatures based on wins and update the rankings array
         sorted_indices = np.argsort(wins_array)[::-1]
@@ -120,7 +82,6 @@ class Architect:
         
         return self.neat.evolve(rankings.ctypes.data)
 
-    def testgamemanager(self):
-        return random.choice([True, False])
+
 
 

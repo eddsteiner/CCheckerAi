@@ -13,7 +13,7 @@ class ChineseCheckersEngine:
         self.actions = {-1, -9, 8, -8, 9, 1} #upleft, upright, left, right, downleft, downright, NOTE: skips are disallowed normally
 
         self.lock = -1 #no lock at first
-        self.jump_history: set[int] = set() #no history at first
+        self.jump_history: set[int | np.int32] = set() #no history at first
         self.current_player = True  #start with player1
 
         self.middle_row = {72, 64, 56, 48, 40, 32, 24, 16, 8} #for collecting stats
@@ -50,7 +50,7 @@ class ChineseCheckersEngine:
         self.current_player = not self.current_player
 
     
-    def update_board(self, tile: int, new_tile: int) -> bool:
+    def update_board(self, tile: int | np.int32, new_tile: int | np.int32) -> bool:
         """Update both boards at once, moving the piece from tile to new_tile."""
         if self.current_player:
             board1 = self.board1
@@ -69,7 +69,7 @@ class ChineseCheckersEngine:
         return True
 
 
-    def is_move_possible(self, tile: int, action: int) -> bool:
+    def is_move_possible(self, tile: int | np.int32, action: int | np.int32) -> bool:
         """Check if a move is possible, agnostic of the current board."""
         if (tile < 0) or (tile > 80) or (action not in self.actions): #parameters were bad, skips are also disallowed
             return False
@@ -87,7 +87,7 @@ class ChineseCheckersEngine:
         return True #doesn't fall into any impossible case so it's possible
 
 
-    def is_move_valid(self, tile: int, action: int) -> bool:
+    def is_move_valid(self, tile: int | np.int32, action: int | np.int32) -> bool:
         """
         Is the move valid on the current board?
         Checks player's turn, and validity.
@@ -106,7 +106,7 @@ class ChineseCheckersEngine:
         return False #slide and jump are both invalid
 
 
-    def is_jump_valid(self, tile: int, action: int) -> bool:
+    def is_jump_valid(self, tile: int | np.int32, action: int | np.int32) -> bool:
         """Verify the jump is valid."""
 
         if self.lock > -1: #if active lock
@@ -125,7 +125,7 @@ class ChineseCheckersEngine:
         return True
 
 
-    def check_jumps(self, tile: int) -> bool:
+    def check_jumps(self, tile: int | np.int32) -> bool:
         """Checks if there's any possible jumps out of this tile."""
         valid = list(map(lambda x: self.is_jump_valid(tile, x), self.actions)) #count number of valid jumps
         return len(valid) > 0
@@ -138,7 +138,7 @@ class ChineseCheckersEngine:
         return len(incomplete) == 0
 
 
-    def make_move(self, tile: int, action: int) -> int:
+    def make_move(self, tile: int | np.int32, action: int | np.int32) -> int:
         """
         Attempt to run a move on the board.
 

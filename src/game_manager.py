@@ -39,12 +39,40 @@ class GameManager:
 
     def run_game(self, creature1: Creature, creature2: Creature) -> tuple[bool, Stats]:
         """Runs one game on two creatures."""
+        swap_players = random.getrandbits(1) == 1
+        if swap_players: #want to randomize who's player1 and player2
+            creature_temp = creature1
+            creature1 = creature2
+            creature2 = creature_temp
+
+        result = -1
+        game = ChineseCheckersEngine()
+        output_buffer_array = np.zeros(417, dtype = np.float32)
+        output_buffer_pointer = output_buffer_array.ctypes.data
+        game_running = True
+        while game_running: #unti the game ends
+            (creature1 if game.current_player else creature2).calculate( #grab correct creature
+                (game.board1 if game.current_player else game.board2).ctypes.data, #grab correct board
+                output_buffer_pointer #feed the output buffer
+            ) #calculate the move confidences
+            sorted_indices = output_buffer_array.argsort()[::-1] #sort max to min
+            for i in sorted_indices:
+                tile, action = self.map_move(int(output_buffer_array[i])) #map the next best move
+                result = game.make_move(tile, action) #now that we have the move, feed it to the game
+                match result:
+                    case -1: #move is invalid, try the next one
+                        continue
+                    case 0: #move is valid, now the other persons's turn
+                        break
+                    case 1: #more jumps available, recalculate
+                        break
+                    case 2: #game was just won by the current player
+                        game_running = False
+                        break
+
+        return (not game.current_player) if swap_players else game.current_player, Stats()
+
        
-       # NOTE, WRITE CODE HERE
-
-        return (True, Stats())
-
-
     def create_move_map(self) -> tuple[npt.NDArray[np.int32], npt.NDArray[np.int32]]:
         """Initializes the move map. This function could be very much optimized."""
         tiles = np.zeros(417, dtype = np.int32)
@@ -137,6 +165,8 @@ class GameManager:
                 actions[offset+4] = 9
                 actions[offset+5] = 1
                 offset += 6
+        tiles[416] = 0
+        actions[416] = -1
         return (tiles, actions)
 
 #    def __init__(self) -> None:

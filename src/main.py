@@ -36,10 +36,16 @@ def main():
     #print(game.check_win(notwin))
     
     print("going to initialize")
-    test = Architect()
+    model = Architect()
     print("initialized")
-    rankingsArray = test.evolve()
-    print(rankingsArray)
+    #rankingsArray = test.evolve()
+    #print(rankingsArray)
+
+    for i in range(100): #train for 100 generations
+        model.evolve()
+
+    print(model.stats)
+
 
 
 

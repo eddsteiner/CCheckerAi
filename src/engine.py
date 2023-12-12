@@ -117,7 +117,7 @@ class ChineseCheckersEngine:
         """Verify the jump is valid."""
 
         if self.lock > -1: #if active lock
-            if action == -1: #if skip
+            if action == 0: #if skip
                 return True
             elif tile != self.lock: #if lock doesn't match
                 return False
@@ -158,7 +158,7 @@ class ChineseCheckersEngine:
         if self.lock > -1: #lock is active
             if not self.is_jump_valid(tile, action): #if jump invalid
                 return -1
-            if action == -1: #if skip
+            if action == 0: #if skip
                 self.lock = -1 #remove lock
                 self.jump_history.clear()
                 if self.check_win(): #if win

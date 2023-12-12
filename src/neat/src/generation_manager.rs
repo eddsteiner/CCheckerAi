@@ -8,7 +8,6 @@ use crate::{creature::{BCreature, Creature}, genome::{NodeGene, ConnectionGene, 
 #[pyclass]
 pub struct GenerationManager {
     #[pyo3(get)]
-    
     population_size: usize,
     input_count: usize, //true input count (excluding bias)
     output_count: usize,

@@ -32,7 +32,9 @@ pub struct BCreature {
 pub struct Creature {
     pub arrays: Arrays,
     pub input_size: usize,
+    #[pyo3(get)]
     pub node_count: usize,
+    #[pyo3(get)]
     pub connection_count: usize,
 }
 #[pymethods]

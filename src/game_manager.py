@@ -18,13 +18,108 @@ class Stats:
     player2_nodes: int
     player2_connections: int
 
+       
+def create_move_map() -> tuple[npt.NDArray[np.int32], npt.NDArray[np.int32]]:
+    """Initializes the move map. This function could be very much optimized."""
+    tiles = np.zeros(417, dtype = np.int32)
+    actions = np.zeros(417, dtype = np.int32)
+    offset = 0
+    
+    # {-1, -9, 8, -8, 9, 1} #upleft, upright, left, right, downleft, downright, NOTE: skips are disallowed normally
+
+    for i in range(81): #for every tile
+        mod = i % 9
+        if i == 0: #top left
+            tiles[offset] = i
+            tiles[offset+1] = i
+            actions[offset] = 9 #downleft
+            actions[offset+1] = 1 #downright
+            offset += 2
+        elif i == 80: #bottom right
+            tiles[offset] = i
+            tiles[offset+1] = i
+            actions[offset] = -1 #upleft
+            actions[offset+1] = -9 #upright
+            offset += 2
+        elif i == 8: #top right
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            actions[offset] = -1 #upleft
+            actions[offset+1] = 8 #left
+            actions[offset+2] = 9 #downleft
+            offset += 3
+        elif i == 72: #bottom left
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            actions[offset] = -9 #upright
+            actions[offset+1] = -8 #right
+            actions[offset+2] = 1 #downright
+            offset += 3
+        elif mod == 0: #left rail
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            tiles[offset+3] = i
+            actions[offset] = -9 #upright
+            actions[offset+1] = -8 #right
+            actions[offset+2] = 1 #downright
+            actions[offset+3] = 9 #downleft
+            offset += 4
+        elif mod == 8: #right rail
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            tiles[offset+3] = i
+            actions[offset] = -9 #upright
+            actions[offset+1] = -1 #upleft
+            actions[offset+2] = 8 #left
+            actions[offset+3] = 9 #downleft
+            offset += 4
+        elif i < 9: #top
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            tiles[offset+3] = i
+            actions[offset] = -1 #upleft
+            actions[offset+1] = 8 #left
+            actions[offset+2] = 9 #downleft
+            actions[offset+3] = 1 #downright
+            offset += 4
+        elif i > 71: #bottom
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            tiles[offset+3] = i
+            actions[offset] = -1 #upleft
+            actions[offset+1] = -9 #upright
+            actions[offset+2] = -8 #right
+            actions[offset+3] = 1 #downright
+            offset += 4
+        else: #middle square
+            tiles[offset] = i
+            tiles[offset+1] = i
+            tiles[offset+2] = i
+            tiles[offset+3] = i
+            tiles[offset+4] = i
+            tiles[offset+5] = i
+            actions[offset] = -1
+            actions[offset+1] = -9
+            actions[offset+2] = 8
+            actions[offset+3] = -8
+            actions[offset+4] = 9
+            actions[offset+5] = 1
+            offset += 6
+    tiles[416] = 0 #skip
+    actions[416] = 0
+    return (tiles, actions)
+
 
 class GameManager:
     """Runs a game on two Creatures."""
+    tile_map, action_map = create_move_map()
     
-    def __init__(self):
-        self.tile_map, self.action_map = self.create_move_map()
-
 
     """ Tile Numbers
 
@@ -126,101 +221,5 @@ class GameManager:
         stats.tied = False
         return (not game.current_player) if swap_players else game.current_player, Stats()
 
-       
-    def create_move_map(self) -> tuple[npt.NDArray[np.int32], npt.NDArray[np.int32]]:
-        """Initializes the move map. This function could be very much optimized."""
-        tiles = np.zeros(417, dtype = np.int32)
-        actions = np.zeros(417, dtype = np.int32)
-        offset = 0
-        
-        # {-1, -9, 8, -8, 9, 1} #upleft, upright, left, right, downleft, downright, NOTE: skips are disallowed normally
-
-        for i in range(81): #for every tile
-            mod = i % 9
-            if i == 0: #top left
-                tiles[offset] = i
-                tiles[offset+1] = i
-                actions[offset] = 9 #downleft
-                actions[offset+1] = 1 #downright
-                offset += 2
-            elif i == 80: #bottom right
-                tiles[offset] = i
-                tiles[offset+1] = i
-                actions[offset] = -1 #upleft
-                actions[offset+1] = -9 #upright
-                offset += 2
-            elif i == 8: #top right
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                actions[offset] = -1 #upleft
-                actions[offset+1] = 8 #left
-                actions[offset+2] = 9 #downleft
-                offset += 3
-            elif i == 72: #bottom left
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                actions[offset] = -9 #upright
-                actions[offset+1] = -8 #right
-                actions[offset+2] = 1 #downright
-                offset += 3
-            elif mod == 0: #left rail
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                tiles[offset+3] = i
-                actions[offset] = -9 #upright
-                actions[offset+1] = -8 #right
-                actions[offset+2] = 1 #downright
-                actions[offset+3] = 9 #downleft
-                offset += 4
-            elif mod == 8: #right rail
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                tiles[offset+3] = i
-                actions[offset] = -9 #upright
-                actions[offset+1] = -1 #upleft
-                actions[offset+2] = 8 #left
-                actions[offset+3] = 9 #downleft
-                offset += 4
-            elif i < 9: #top
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                tiles[offset+3] = i
-                actions[offset] = -1 #upleft
-                actions[offset+1] = 8 #left
-                actions[offset+2] = 9 #downleft
-                actions[offset+3] = 1 #downright
-                offset += 4
-            elif i > 71: #bottom
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                tiles[offset+3] = i
-                actions[offset] = -1 #upleft
-                actions[offset+1] = -9 #upright
-                actions[offset+2] = -8 #right
-                actions[offset+3] = 1 #downright
-                offset += 4
-            else: #middle square
-                tiles[offset] = i
-                tiles[offset+1] = i
-                tiles[offset+2] = i
-                tiles[offset+3] = i
-                tiles[offset+4] = i
-                tiles[offset+5] = i
-                actions[offset] = -1
-                actions[offset+1] = -9
-                actions[offset+2] = 8
-                actions[offset+3] = -8
-                actions[offset+4] = 9
-                actions[offset+5] = 1
-                offset += 6
-        tiles[416] = 0 #skip
-        actions[416] = 0
-        return (tiles, actions)
 
 

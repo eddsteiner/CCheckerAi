@@ -3,7 +3,7 @@ The purpose of this repository is to train an AI using NEAT to
 play chinese checkers.
 
 ### Instructions
-Prerequisites: install cuda build tools, python, rust, and maturin
+Prerequisites: install cuda build tools, python, rust, and maturin<br>
 Make sure to launch a python virtual environment before building
 ```
   cd src/neat
